@@ -9,7 +9,7 @@ import logging
 import uuid
 from typing import Any, Dict, List, Optional, Callable, Awaitable
 
-from ..types import ServerConfig, ToolResult, ResourceResult, PromptResult
+from ..types import ServerConfig, ToolResult, ResourceResult, PromptResult, ToolInfo
 from ..exceptions import LMCPError, ValidationError
 from .messages import (
     MCPRequest, MCPResponse, MCPNotification, MCPError,
@@ -39,6 +39,11 @@ class MCPServer:
         self._tool_handler: Optional[Callable] = None
         self._resource_handler: Optional[Callable] = None
         self._prompt_handler: Optional[Callable] = None
+        
+        # List handlers for getting available items
+        self._tools_list_handler: Optional[Callable] = None
+        self._resources_list_handler: Optional[Callable] = None
+        self._prompts_list_handler: Optional[Callable] = None
         
         # Message handlers
         self._request_handlers: Dict[str, Callable] = {
@@ -101,11 +106,80 @@ class MCPServer:
         """Register a prompt handler."""
         self._prompt_handler = handler
     
+    async def register_tools_list_handler(self, handler: Callable[[], Awaitable[List[Dict[str, Any]]]]) -> None:
+        """Register a tools list handler."""
+        self._tools_list_handler = handler
+    
+    async def register_resources_list_handler(self, handler: Callable[[], Awaitable[List[Dict[str, Any]]]]) -> None:
+        """Register a resources list handler."""
+        self._resources_list_handler = handler
+    
+    async def register_prompts_list_handler(self, handler: Callable[[], Awaitable[List[Dict[str, Any]]]]) -> None:
+        """Register a prompts list handler."""
+        self._prompts_list_handler = handler
+    
     async def _start_processing(self) -> None:
         """Start processing messages."""
-        # This would typically start a message processing loop
-        # For now, we'll just mark as initialized
+        import sys
+        import json
+        
         self._initialized = True
+        
+        # For stdio transport, we need to read from stdin
+        if self.config.transport == "stdio":
+            # Start stdin reader task
+            self._stdin_task = asyncio.create_task(self._read_stdin())
+    
+    async def _read_stdin(self) -> None:
+        """Read and process messages from stdin."""
+        import sys
+        import json
+        
+        logger.info("Starting stdin reader...")
+        
+        try:
+            loop = asyncio.get_event_loop()
+            
+            while True:
+                logger.debug("Waiting for stdin input...")
+                # Read a line from stdin using thread executor
+                line = await loop.run_in_executor(None, sys.stdin.readline)
+                
+                logger.debug(f"Read line: {repr(line)}")
+                
+                if not line:  # EOF
+                    logger.info("EOF received, stopping stdin reader")
+                    break
+                
+                line = line.strip()
+                if not line:
+                    logger.debug("Empty line, continuing...")
+                    continue
+                
+                try:
+                    # Parse JSON message
+                    message = json.loads(line)
+                    logger.info(f"Received message: {message}")
+                    
+                    # Process the message
+                    response = await self.handle_message(message)
+                    
+                    # Send response if there is one
+                    if response:
+                        output = json.dumps(response)
+                        print(output, flush=True)
+                        logger.info(f"Sent response: {output}")
+                        
+                except json.JSONDecodeError as e:
+                    logger.error(f"Invalid JSON received: {e}")
+                    continue
+                except Exception as e:
+                    logger.error(f"Error processing message: {e}")
+                    continue
+                    
+        except Exception as e:
+            logger.error(f"Error reading from stdin: {e}")
+            raise
     
     async def handle_message(self, message: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Handle an incoming message."""
@@ -197,12 +271,26 @@ class MCPServer:
     
     async def _handle_list_tools(self, request: ListToolsRequest) -> ListToolsResponse:
         """Handle list tools request."""
-        # This would typically call the registered tool handler to get available tools
-        # For now, return empty list
-        return ListToolsResponse(
-            id=request.id,
-            result={"tools": []}
-        )
+        if not self._tools_list_handler:
+            logger.warning("No tools list handler registered")
+            return ListToolsResponse(
+                id=request.id,
+                result={"tools": []}
+            )
+        
+        try:
+            tools = await self._tools_list_handler()
+            return ListToolsResponse(
+                id=request.id,
+                result={"tools": tools}
+            )
+        except Exception as e:
+            logger.error(f"Failed to list tools: {e}")
+            return ListToolsResponse(
+                id=request.id,
+                result={"tools": []},
+                error={"code": -32603, "message": f"Failed to list tools: {e}"}
+            )
     
     async def _handle_call_tool(self, request: CallToolRequest) -> CallToolResponse:
         """Handle call tool request."""

@@ -7,6 +7,7 @@ Defines the core types used throughout LMCP.
 from typing import Any, Dict, List, Optional, Union, Literal, Protocol
 from pydantic import BaseModel, Field
 from datetime import datetime
+from enum import Enum
 
 
 class ToolResult(BaseModel):
@@ -90,7 +91,7 @@ class ServerConfig(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
-class LogLevel(str):
+class LogLevel(str, Enum):
     """Log level enumeration."""
     DEBUG = "DEBUG"
     INFO = "INFO"

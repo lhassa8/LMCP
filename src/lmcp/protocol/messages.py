@@ -7,6 +7,7 @@ Defines the message types used in the MCP protocol.
 from typing import Any, Dict, List, Optional, Union, Literal
 from pydantic import BaseModel, Field
 from datetime import datetime
+from ..types import ToolInfo
 
 
 class MCPMessage(BaseModel):
@@ -59,12 +60,6 @@ class InitializedNotification(MCPNotification):
 
 
 # Tool Messages
-class ToolInfo(BaseModel):
-    """Tool information."""
-    name: str
-    description: Optional[str] = None
-    inputSchema: Dict[str, Any] = Field(default_factory=dict)
-    outputSchema: Optional[Dict[str, Any]] = None
 
 
 class ListToolsRequest(MCPRequest):

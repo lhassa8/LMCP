@@ -235,6 +235,11 @@ class Server:
         await self._mcp_server.register_resource_handler(self._handle_resource_request)
         await self._mcp_server.register_prompt_handler(self._handle_prompt_request)
         
+        # Register list handlers
+        await self._mcp_server.register_tools_list_handler(self._list_tools_for_protocol)
+        await self._mcp_server.register_resources_list_handler(self._list_resources_for_protocol)
+        await self._mcp_server.register_prompts_list_handler(self._list_prompts_for_protocol)
+        
         # Start the server
         await self._mcp_server.start()
         self._running = True
@@ -303,6 +308,21 @@ class Server:
             logger.error(f"Resource request failed: {e}")
             raise ValidationError(f"Failed to get resource '{uri}': {e}")
     
+    async def _list_tools_for_protocol(self) -> List[Dict[str, Any]]:
+        """List all available tools for the protocol layer."""
+        tools = self.list_tools()
+        return [tool.model_dump() for tool in tools]
+    
+    async def _list_resources_for_protocol(self) -> List[Dict[str, Any]]:
+        """List all available resources for the protocol layer."""
+        resources = self.list_resources()
+        return [resource.model_dump() for resource in resources]
+    
+    async def _list_prompts_for_protocol(self) -> List[Dict[str, Any]]:
+        """List all available prompts for the protocol layer."""
+        prompts = self.list_prompts()
+        return [prompt.model_dump() for prompt in prompts]
+
     async def _handle_prompt_request(self, name: str, arguments: Dict[str, Any]) -> PromptResult:
         """Handle prompt requests."""
         prompt = self._prompt_registry.get_prompt(name)
@@ -439,7 +459,48 @@ def server(name: str, config: Optional[ServerConfig] = None) -> Callable[[type],
     return decorator
 
 
-async def run_server(server_instance: Server, host: str = "localhost", port: int = 8080):
+async def run_server_async(server_instance: Server, host: str = "localhost", port: int = 8080):
+    """
+    Run an MCP server instance asynchronously.
+    
+    Args:
+        server_instance: The server instance to run
+        host: Host to bind to
+        port: Port to bind to
+    
+    Examples:
+        >>> server = MyServer(name="calculator")
+        >>> await run_server_async(server)
+    """
+    try:
+        await server_instance.start()
+        
+        # For stdio transport, wait for the stdin task to complete
+        if server_instance.config.transport == "stdio":
+            logger.info("Server running in stdio mode")
+            mcp_server = server_instance._mcp_server
+            if hasattr(mcp_server, '_stdin_task'):
+                await mcp_server._stdin_task
+            else:
+                # Fallback - wait indefinitely
+                while True:
+                    await asyncio.sleep(1)
+        else:
+            # Keep the server running for other transports
+            logger.info(f"Server running on {host}:{port}")
+            while True:
+                await asyncio.sleep(1)
+            
+    except KeyboardInterrupt:
+        logger.info("Shutting down server...")
+        await server_instance.stop()
+    except Exception as e:
+        logger.error(f"Server error: {e}")
+        await server_instance.stop()
+        raise
+
+
+def run_server(server_instance: Server, host: str = "localhost", port: int = 8080):
     """
     Run an MCP server instance.
     
@@ -450,20 +511,12 @@ async def run_server(server_instance: Server, host: str = "localhost", port: int
     
     Examples:
         >>> server = MyServer(name="calculator")
-        >>> await run_server(server)
+        >>> run_server(server)
     """
     try:
-        await server_instance.start()
-        
-        # Keep the server running
-        logger.info(f"Server running on {host}:{port}")
-        while True:
-            await asyncio.sleep(1)
-            
+        asyncio.run(run_server_async(server_instance, host, port))
     except KeyboardInterrupt:
-        logger.info("Shutting down server...")
-        await server_instance.stop()
+        logger.info("Server stopped by user")
     except Exception as e:
         logger.error(f"Server error: {e}")
-        await server_instance.stop()
         raise

@@ -48,6 +48,9 @@ class MCPClient:
             return self._server_info
         
         try:
+            # Start receiving messages BEFORE sending any requests
+            self._receive_task = asyncio.create_task(self._receive_loop())
+            
             # Send initialize request
             request = InitializeRequest(
                 id=self._generate_id(),
@@ -79,9 +82,6 @@ class MCPClient:
             await self._send_notification(MCPNotification(
                 method="notifications/initialized"
             ))
-            
-            # Start receiving messages
-            self._receive_task = asyncio.create_task(self._receive_loop())
             
             self._initialized = True
             logger.info(f"MCP client initialized with server: {self._server_info.name}")

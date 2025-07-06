@@ -71,7 +71,7 @@ def main():
             print("👍 Using existing environment")
     
     if not env_dir.exists():
-        if not run_command(f"python -m venv {env_dir}", "Creating virtual environment"):
+        if not run_command(f"python3 -m venv {env_dir}", "Creating virtual environment"):
             sys.exit(1)
     
     # Determine activation script and commands based on OS

@@ -1,0 +1,14 @@
+# LMCP Development Environment
+
+To activate your development environment:
+source /Users/user/Documents/LMCP/lmcp-env/bin/activate
+
+Quick commands:
+• lmcp --help                    # Show all CLI commands
+• lmcp create sample my-server   # Create a sample server
+• python get_started.py         # Run the demo
+• python test_installation.py   # Test installation
+• pytest                        # Run tests
+
+Repository: /Users/user/Documents/LMCP
+Environment: /Users/user/Documents/LMCP/lmcp-env
