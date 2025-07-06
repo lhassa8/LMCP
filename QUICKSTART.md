@@ -11,9 +11,11 @@ python -m venv lmcp-env
 # Activate it
 source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
 
-# Install LMCP
-pip install lmcp
+# Install LMCP from GitHub (current method)
+pip install git+https://github.com/lhassa8/LMCP.git
 ```
+
+> 📝 **Note**: LMCP isn't on PyPI yet, so we install directly from GitHub. Once published, you'll be able to use `pip install lmcp`.
 
 > 💡 **Why use a virtual environment?** It keeps LMCP and its dependencies separate from your system Python, preventing conflicts.
 
@@ -188,7 +190,11 @@ asyncio.run(use_calculator())
 
 **"Command not found: lmcp"**
 - Make sure your virtual environment is activated: `source lmcp-env/bin/activate`
-- Try reinstalling: `pip install --upgrade lmcp`
+- Try reinstalling: `pip install --force-reinstall git+https://github.com/lhassa8/LMCP.git`
+
+**"Could not find a version that satisfies the requirement lmcp"**
+- Use the GitHub installation: `pip install git+https://github.com/lhassa8/LMCP.git`
+- LMCP isn't on PyPI yet, so `pip install lmcp` won't work
 
 **"Permission denied" or "Access denied"**
 - Use a virtual environment instead of system Python
@@ -197,6 +203,10 @@ asyncio.run(use_calculator())
 **"Module not found" errors**
 - Activate your virtual environment in every new terminal
 - Check Python version: `python --version` (needs 3.9+)
+
+**Git installation issues**
+- Make sure Git is installed: `git --version`
+- Alternative: Download the repo as ZIP and use `pip install -e .`
 
 ### More Help
 - **Examples**: Check the `examples/` folder for more ideas

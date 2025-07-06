@@ -76,11 +76,12 @@ def main():
         else:
             print("❌ Development install failed. Try manual installation.")
     else:
-        print("📦 Installing LMCP from PyPI...")
-        if run_command(f"{pip_cmd} install lmcp", "Installing LMCP"):
+        print("📦 Installing LMCP from GitHub...")
+        if run_command(f"{pip_cmd} install git+https://github.com/lhassa8/LMCP.git", "Installing LMCP from GitHub"):
             print("✅ LMCP installed successfully!")
         else:
-            print("❌ Installation failed. Please check your internet connection.")
+            print("❌ Installation failed. Please check your internet connection and Git installation.")
+            print("💡 Alternative: Clone the repo and run 'pip install -e .'")
             sys.exit(1)
     
     print()

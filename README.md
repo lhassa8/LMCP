@@ -53,21 +53,14 @@ That's it! Your MCP server is ready to use.
 
 ## ⚡ Get Started in 60 Seconds
 
-### Option 1: Automatic Setup (Easiest!)
-```bash
-# Download and run the setup script
-curl -O https://raw.githubusercontent.com/lhassa8/LMCP/main/setup_env.py
-python setup_env.py
-```
-
-### Option 2: Manual Setup
+### Option 1: Install from GitHub (Current)
 ```bash
 # 1. Create a clean Python environment
 python -m venv lmcp-env
 source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
 
-# 2. Install LMCP
-pip install lmcp
+# 2. Install LMCP directly from GitHub
+pip install git+https://github.com/lhassa8/LMCP.git
 
 # 3. Create a server instantly
 lmcp create sample my-tools
@@ -80,6 +73,29 @@ source lmcp-env/bin/activate  # Windows: lmcp-env\Scripts\activate
 lmcp client list-tools stdio://python my_tools_server.py
 ```
 
+### Option 2: Development Install (If you have the repo)
+```bash
+# 1. Clone and enter the repository
+git clone https://github.com/lhassa8/LMCP.git
+cd LMCP
+
+# 2. Quick setup (recommended)
+python install_local.py
+
+# 3. Activate and test
+source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
+python test_installation.py
+```
+
+### Option 3: Manual Development Install
+```bash
+# If you prefer manual setup
+python -m venv lmcp-env
+source lmcp-env/bin/activate
+pip install -e .[dev]
+python get_started.py
+```
+
 **That's it!** You now have a working MCP server. 🎉
 
 > 💡 **Pro tip**: Always use a virtual environment to avoid dependency conflicts!
@@ -87,15 +103,20 @@ lmcp client list-tools stdio://python my_tools_server.py
 ## 📦 Installation Options
 
 ```bash
-# Basic installation
-pip install lmcp
+# From GitHub (current method)
+pip install git+https://github.com/lhassa8/LMCP.git
 
-# With development tools
-pip install lmcp[dev]
+# Development install from local repo
+pip install -e .
 
-# With all examples
-pip install lmcp[examples]
+# With development tools (from repo)
+pip install -e .[dev]
+
+# With all examples (from repo)
+pip install -e .[examples]
 ```
+
+> 🚀 **Coming Soon**: LMCP will be published to PyPI for easier installation with `pip install lmcp`
 
 ## 💡 Common Use Cases (Copy & Paste!)
 

@@ -112,7 +112,7 @@ def main():
     print("1. Set up environment:")
     print("   python -m venv lmcp-env")
     print("   source lmcp-env/bin/activate  # Windows: lmcp-env\\Scripts\\activate")
-    print("2. Install LMCP: pip install lmcp")
+    print("2. Install LMCP: pip install git+https://github.com/lhassa8/LMCP.git")
     print("3. Create a server: lmcp create sample my-server")
     print("4. Run it: python my_server_server.py")
     print("5. Test it (new terminal): lmcp client list-tools stdio://python my_server_server.py")
