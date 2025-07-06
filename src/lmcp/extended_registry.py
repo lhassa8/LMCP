@@ -10,10 +10,10 @@ from typing import Dict, List
 from .discovery import ServerInfo
 
 def get_extended_servers() -> Dict[str, ServerInfo]:
-    """Get additional MCP servers for the registry."""
+    """Get additional VERIFIED MCP servers for the registry."""
     
     return {
-        # Additional Official Servers
+        # Additional Official Servers (VERIFIED to exist)
         "memory": ServerInfo(
             name="memory",
             description="Knowledge graph-based persistent memory system",

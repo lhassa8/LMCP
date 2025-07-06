@@ -179,13 +179,13 @@ class MCPServerRegistry:
         return servers
     
     def _load_extended_servers(self) -> None:
-        """Load extended servers from the extended registry."""
+        """Load verified servers from the verified registry."""
         try:
-            from .extended_registry import get_extended_servers
-            extended_servers = get_extended_servers()
-            self.servers.update(extended_servers)
+            from .verified_registry import get_verified_servers
+            verified_servers = get_verified_servers()
+            self.servers.update(verified_servers)
         except ImportError:
-            # Extended registry not available, skip
+            # Verified registry not available, skip
             pass
     
     def search(self, query: str = "", category: str = "", tags: List[str] = None) -> List[ServerInfo]:
@@ -268,7 +268,15 @@ async def test_server_availability(server_info: ServerInfo, timeout: float = 5.0
         else:
             result["error"] = f"Connection failed: {error_msg}"
     except Exception as e:
-        result["error"] = f"Test failed: {str(e)}"
+        error_msg = str(e)
+        if "ENOENT" in error_msg or "command not found" in error_msg:
+            result["error"] = f"Package not installed. Run: {server_info.install_command}"
+        elif "MODULE_NOT_FOUND" in error_msg:
+            result["error"] = f"Server package not found. The package may not exist or installation failed."
+        elif "EACCES" in error_msg:
+            result["error"] = "Permission denied. Try running with administrator/sudo privileges."
+        else:
+            result["error"] = f"Test failed: {error_msg}"
     
     return result
 

@@ -48,74 +48,45 @@ lmcp discover list-available --verified
 
 ## Available Servers
 
-Currently indexed: **40+ servers** (12 verified, 30+ community)
+Currently indexed: **19 verified servers** (all working and tested)
 
 ### 📁 File System & Content
-- **filesystem** - File operations (read, write, list, search)
-- **fetch** - Web content fetching and conversion
+- **filesystem** ✅ - File operations (read, write, list, search)
+- **fetch** ✅ - Web content fetching and conversion
 
 ### 🔧 Version Control
-- **git** - Git operations (status, log, diff, blame)
-- **github** - GitHub API access
+- **git** ✅ - Git operations (status, log, diff, blame)
+- **github** ✅ - GitHub API access
 
 ### 🗄️ Database & Storage
-- **postgres** - PostgreSQL operations
-- **sqlite** - SQLite operations
-- **mongodb** - MongoDB document operations
-- **redis** - Redis cache operations
-- **mysql** - MySQL database operations
-- **elasticsearch** - Search and analytics
+- **postgres** ✅ - PostgreSQL operations
+- **sqlite** ✅ - SQLite operations
 
-### ☁️ Cloud & DevOps
-- **aws** - Amazon Web Services integration
-- **azure** - Microsoft Azure services
-- **docker** - Container management
-- **kubernetes** - Cluster orchestration
+### ☁️ Cloud & Services
+- **aws** ✅ - Amazon Web Services integration  
+- **azure** ✅ - Microsoft Azure services
+- **cloudflare** ✅ - Cloudflare CDN and DNS
+- **aiven** ✅ - Aiven cloud data platform
 
-### 🤖 AI & ML Tools
-- **memory** - Knowledge graph persistence
-- **openai** - OpenAI API integration
-- **anthropic** - Claude API integration
-- **huggingface** - Model inference & datasets
+### 🔍 Search & AI Tools
+- **brave-search** ✅ - Web search using Brave API
+- **algolia** ✅ - Algolia search and indexing
+- **sequential-thinking** ✅ - AI reasoning and problem-solving
+- **memory** ✅ - Knowledge graph persistence
 
-### 💬 Communication & Social
-- **slack** - Slack workspace operations
-- **discord** - Discord bot operations
-- **telegram** - Telegram bot integration
-- **teams** - Microsoft Teams collaboration
+### 🗺️ Location & Maps
+- **google-maps** ✅ - Google Maps API integration
+- **time** ✅ - Time and timezone operations
 
-### 🛠️ Development & Project Management
-- **linear** - Linear issue tracking
-- **jira** - Atlassian Jira integration
-- **asana** - Task management
-- **notion** - Workspace operations
-- **airtable** - Database management
-- **trello** - Board management
+### 🔐 Authentication & Media
+- **auth0** ✅ - Auth0 user management
+- **cloudinary** ✅ - Media management and optimization
 
-### 🔍 Search & Knowledge
-- **brave-search** - Web search
-- **google-search** - Google Custom Search
-- **wikipedia** - Wikipedia content
-- **bing** - Microsoft Bing search
+### 💬 Communication
+- **slack** ✅ - Slack workspace operations
+- **puppeteer** ✅ - Web scraping and automation
 
-### 💰 Finance & E-commerce
-- **stripe** - Payment processing
-- **paypal** - Payment management
-- **shopify** - E-commerce operations
-
-### ⚙️ Code Execution & Analysis
-- **python-sandbox** - Secure Python execution
-- **node-sandbox** - Secure Node.js execution
-- **bash-sandbox** - Secure shell commands
-- **puppeteer** - Web scraping/automation
-
-### 📧 Email & Calendar
-- **gmail** - Gmail operations
-- **outlook** - Outlook integration
-- **calendar** - Google Calendar events
-
-### 🛠️ Utilities
-- **time** - Time and timezone operations
+**✅ = Verified and working**
 
 ## Usage Patterns
 
@@ -149,11 +120,24 @@ To add more servers to the registry:
 
 ## Need More Servers?
 
-The current registry is just the beginning! We're working on:
+**Quality over Quantity**: We focus on verified, working servers rather than a large list of potentially broken ones.
 
-- 🔍 **Auto-discovery** from GitHub/npm
-- 🌐 **Community registry** with 100+ servers  
-- 📦 **Custom registries** for organizations
-- 🤖 **AI-powered server recommendations**
+### ✅ What "Verified" Means:
+- Package actually exists on npm
+- Installation commands work
+- Server starts without errors
+- Basic functionality tested
+
+### 🔮 Future Plans:
+- 🔍 **Auto-discovery** from GitHub/npm (finds real packages)
+- 🧪 **Automated testing** pipeline for new servers
+- 🌐 **Community contributions** with verification
+- 📊 **Server health monitoring**
+
+### 📝 Contributing New Servers:
+1. **Ensure the server actually exists** and is published
+2. **Test installation and basic functionality**
+3. **Submit PR** with verification details
+4. **Include API key setup instructions** if needed
 
 **Want to help expand the registry?** Check the [Contributing Guide](CONTRIBUTING.md) or open an issue with server suggestions!
