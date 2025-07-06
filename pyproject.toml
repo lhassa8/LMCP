@@ -34,6 +34,7 @@ dependencies = [
     "typing-extensions>=4.0.0",
     "rich>=13.0.0",
     "click>=8.0.0",
+    "websockets>=10.0",
 ]
 
 [project.optional-dependencies]
@@ -178,6 +179,6 @@ exclude_lines = [
     "raise NotImplementedError",
     "if 0:",
     "if __name__ == .__main__.:",
-    "class .*\bProtocol\):",
-    "@(abc\.)?abstractmethod",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
 ]
