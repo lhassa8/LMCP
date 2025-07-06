@@ -196,7 +196,8 @@ class MCPServer:
                 return None
             
             else:
-                logger.warning(f"Unknown message type: {message}")
+                # Don't log unknown message types as they interfere with stdio protocol
+                pass
                 return None
                 
         except Exception as e:
