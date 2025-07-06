@@ -1,5 +1,5 @@
 """
-Test-Resources MCP Server
+Test-Server MCP Server
 
 A sample MCP server created with LMCP.
 """
@@ -7,8 +7,8 @@ A sample MCP server created with LMCP.
 import lmcp
 import math
 
-@lmcp.server("test-resources")
-class TestresourcesServer:
+@lmcp.server("test-server")
+class TestserverServer:
     """Sample server with basic tools and resources."""
     
     @lmcp.tool("Add two numbers")
@@ -32,7 +32,7 @@ class TestresourcesServer:
     def server_info(self) -> dict:
         """Get information about this server."""
         return {
-            "name": "test-resources",
+            "name": "test-server",
             "version": "1.0.0",
             "capabilities": ["math", "greetings"],
             "status": "running"
@@ -48,11 +48,15 @@ class TestresourcesServer:
         }
 
 if __name__ == "__main__":
-    print("🚀 Starting test-resources server...")
-    print("📋 Available tools: add, sqrt, greet")
-    print("📁 Available resources: server://info, server://stats")
-    print("🌐 Use the LMCP CLI to test: lmcp client list-tools stdio://python test_resources_server.py")
-    print()
+    import sys
     
-    server = TestresourcesServer()
+    # Only show startup messages if not in stdio mode
+    if sys.stdout.isatty():
+        print("🚀 Starting test-server server...")
+        print("📋 Available tools: add, sqrt, greet")
+        print("📁 Available resources: server://info, server://stats")
+        print("🌐 Use the LMCP CLI to test: lmcp client list-tools stdio://python test_server_server.py")
+        print()
+    
+    server = TestserverServer()
     lmcp.run_server(server)
