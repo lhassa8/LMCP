@@ -8,8 +8,19 @@ LMCP is a simple MCP client for discovering and using existing MCP servers.
 # Clone and install from GitHub
 git clone https://github.com/lhassa8/LMCP.git
 cd LMCP
+
+# Create and activate virtual environment
+python -m venv lmcp-env
+source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
+
+# Install LMCP
 pip install -e .
 ```
+
+> ⚠️ **Always activate your virtual environment before using LMCP:**
+> ```bash
+> source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
+> ```
 
 ## Quick Start
 

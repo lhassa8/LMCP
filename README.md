@@ -26,21 +26,25 @@ A simple MCP client for discovering and using existing MCP servers.
 > 📚 **Complete Beginner?** Check out [QUICKSTART.md](QUICKSTART.md) for step-by-step instructions!
 
 ```bash
-# 1. Clone and install LMCP
+# 1. Clone and create virtual environment
 git clone https://github.com/lhassa8/LMCP.git
 cd LMCP
+python -m venv lmcp-env
+source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
+
+# 2. Install LMCP
 pip install -e .
 
-# 2. List available MCP servers
+# 3. List available MCP servers
 lmcp list
 
-# 3. Install a server (requires Node.js/npm)
+# 4. Install a server (requires Node.js/npm)
 lmcp install filesystem
 
-# 4. Test if server works  
+# 5. Test if server works  
 lmcp test filesystem
 
-# 5. Use a tool
+# 6. Use a tool
 lmcp use filesystem list_directory --params '{"path": "."}'
 ```
 
@@ -104,12 +108,16 @@ lmcp use wikipedia getPage --params '{"title": "Python (programming language)"}'
 - **Node.js and npm** - [Download here](https://nodejs.org/) (required for MCP servers)
 - **Git** - [Download here](https://git-scm.com/downloads)
 
-### Install from GitHub
+### Install from GitHub (Recommended)
 
 ```bash
 # Clone the repository
 git clone https://github.com/lhassa8/LMCP.git
 cd LMCP
+
+# Create and activate virtual environment
+python -m venv lmcp-env
+source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
 
 # Install in development mode
 pip install -e .
@@ -118,19 +126,29 @@ pip install -e .
 lmcp --help
 ```
 
-> 💡 **Tip**: For clean installs, use a virtual environment:
+> ⚠️ **Important**: Always activate your virtual environment before using LMCP:
 > ```bash
-> python -m venv lmcp-env
 > source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
-> pip install -e .
 > ```
 
 ### Alternative: Download ZIP
 1. Go to https://github.com/lhassa8/LMCP
 2. Click "Code" → "Download ZIP"
-3. Extract and run: `pip install -e .`
+3. Extract, then:
+   ```bash
+   cd LMCP
+   python -m venv lmcp-env
+   source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
+   pip install -e .
+   ```
 
 ### Troubleshooting Installation
+
+**Issue: `lmcp: command not found`**
+```bash
+# Activate your virtual environment first!
+source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
+```
 
 **Issue: `pip: command not found`**
 ```bash
@@ -140,8 +158,10 @@ python -m ensurepip --upgrade
 
 **Issue: Permission denied**
 ```bash
-# Use --user flag
-pip install --user -e .
+# Use virtual environment (recommended)
+python -m venv lmcp-env
+source lmcp-env/bin/activate
+pip install -e .
 ```
 
 **Issue: Node.js not found**

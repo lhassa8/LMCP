@@ -4,7 +4,9 @@
 
 ### Install Python 3.8+
 - **Windows/Mac**: Download from https://www.python.org/downloads/
-- **Linux**: `sudo apt install python3 python3-pip` (Ubuntu/Debian)
+- **Linux**: `sudo apt install python3 python3-pip python3-venv` (Ubuntu/Debian)
+
+> 💡 **Windows Users**: Make sure to check "Add Python to PATH" during installation!
 
 ### Install Node.js & npm  
 - **All platforms**: Download from https://nodejs.org/
@@ -22,6 +24,12 @@ git clone https://github.com/lhassa8/LMCP.git
 # Enter directory
 cd LMCP
 
+# Create virtual environment (IMPORTANT!)
+python -m venv lmcp-env
+
+# Activate virtual environment
+source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
+
 # Install LMCP
 pip install -e .
 
@@ -29,7 +37,17 @@ pip install -e .
 lmcp --help
 ```
 
+> 🔥 **Always activate your virtual environment first!**
+> ```bash
+> source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
+> ```
+
 ## Step 3: Try Your First MCP Server
+
+> **Remember**: Make sure your virtual environment is active!
+> ```bash
+> source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
+> ```
 
 ```bash
 # See all available servers
@@ -78,6 +96,12 @@ python -m ensurepip --upgrade
 
 ### "Permission denied"
 ```bash
+# Use virtual environment instead (recommended)
+python -m venv lmcp-env
+source lmcp-env/bin/activate
+pip install -e .
+
+# Or use --user flag as fallback
 pip install --user -e .
 ```
 
