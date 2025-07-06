@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "lmcp"
 version = "0.1.0"
-description = "A powerful yet easy-to-use Python wrapper for Claude's Model Context Protocol (MCP)"
+description = "A powerful yet easy-to-use Python wrapper for the Model Context Protocol (MCP)"
 authors = [
     {name = "lhassa8", email = "lhassa8@users.noreply.github.com"},
 ]

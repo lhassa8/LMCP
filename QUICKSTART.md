@@ -1,6 +1,6 @@
 # 🚀 LMCP Quick Start - Get Running in 2 Minutes!
 
-LMCP makes working with Claude's Model Context Protocol super easy. Here's how to get started instantly:
+LMCP makes working with the Model Context Protocol super easy. Here's how to get started instantly:
 
 ## 📦 Step 1: Set Up Environment (30 seconds)
 

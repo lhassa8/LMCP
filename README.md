@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-A powerful yet easy-to-use Python wrapper for Claude's Model Context Protocol (MCP). LMCP transforms the protocol-level MCP interface into a Pythonic, developer-friendly library that "just works" while maintaining full protocol capabilities.
+A powerful yet easy-to-use Python wrapper for the Model Context Protocol (MCP). LMCP transforms the protocol-level MCP interface into a Pythonic, developer-friendly library that "just works" while maintaining full protocol capabilities.
 
 ## 🚀 Quick Start
 
@@ -264,6 +264,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🔗 Links
 
 - [Model Context Protocol](https://modelcontextprotocol.io/)
-- [Anthropic Claude](https://claude.ai/)
+- [Anthropic](https://anthropic.com/)
 - [MCP Servers](https://github.com/modelcontextprotocol/servers)
 - [GitHub Repository](https://github.com/lhassa8/LMCP)

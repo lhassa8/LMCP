@@ -1,7 +1,7 @@
 """
 LMCP - Lightweight Model Context Protocol
 
-A powerful yet easy-to-use Python wrapper for Claude's Model Context Protocol (MCP).
+A powerful yet easy-to-use Python wrapper for the Model Context Protocol (MCP).
 """
 
 from .client import Client, connect

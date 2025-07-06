@@ -84,7 +84,7 @@ def main():
     print("=" * 60)
     print()
     
-    print("LMCP makes working with Claude's MCP super easy!")
+    print("LMCP makes working with the Model Context Protocol super easy!")
     print("Let's see it in action...")
     print()
     
