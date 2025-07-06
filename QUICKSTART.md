@@ -111,11 +111,38 @@ pip install --user -e .
 ### "npm: command not found"
 Install Node.js from https://nodejs.org/
 
+## Step 5: Using Python API (Optional)
+
+If you want to use LMCP in your Python code instead of the CLI:
+
+```python
+import asyncio
+from lmcp import SimpleMCP
+
+async def python_example():
+    # Create client
+    client = SimpleMCP()
+    
+    # Install and test hello-world server
+    client.install_server("hello-world")
+    await client.test_server("hello-world")
+    
+    # Use a tool
+    result = await client.call_tool("hello-world", "echo", message="Hello from Python!")
+    print(f"Result: {result}")
+
+# Run the example
+asyncio.run(python_example())
+```
+
+> 📚 **Want more Python examples?** Check out [PYTHON_API.md](PYTHON_API.md) for comprehensive Python usage guide!
+
 ## What's Next?
 
 - Run `lmcp list` to see all 18 available servers
 - Try different servers that don't require API keys
 - Check out the full [CLIENT_GUIDE.md](CLIENT_GUIDE.md) for more details
+- Use [PYTHON_API.md](PYTHON_API.md) for programmatic usage
 
 ## Need Help?
 

@@ -74,18 +74,20 @@ lmcp use filesystem list_directory --params '{"path": "."}'
 
 ## 📖 Usage Examples
 
-### List all available servers
+### Command Line Interface
+
+#### List all available servers
 ```bash
 lmcp list
 ```
 
-### Install and test a server
+#### Install and test a server
 ```bash
 lmcp install filesystem
 lmcp test filesystem
 ```
 
-### Get examples for any server
+#### Get examples for any server
 ```bash
 # See examples for any server
 lmcp examples filesystem
@@ -93,7 +95,7 @@ lmcp examples hello-world
 lmcp examples wikipedia
 ```
 
-### Use server tools
+#### Use server tools
 ```bash
 # Filesystem operations
 lmcp use filesystem list_directory --params '{"path": "."}'
@@ -105,6 +107,40 @@ lmcp use hello-world echo --params '{"message": "Hello LMCP!"}'
 # Wikipedia search
 lmcp use wikipedia findPage --params '{"query": "artificial intelligence"}'
 ```
+
+### Python API
+
+Use LMCP programmatically in your Python applications:
+
+```python
+import asyncio
+from lmcp import SimpleMCP
+
+async def main():
+    # Create client
+    client = SimpleMCP()
+    
+    # Install and test a server
+    client.install_server("hello-world")
+    await client.test_server("hello-world")
+    
+    # Use tools
+    result = await client.call_tool("hello-world", "echo", message="Hello from Python!")
+    print(result)
+    
+    # File operations
+    client.install_server("filesystem")
+    await client.test_server("filesystem")
+    
+    # List directory
+    result = await client.call_tool("filesystem", "list_directory", path=".")
+    print("Directory contents:", result)
+
+# Run the example
+asyncio.run(main())
+```
+
+> 📚 **Full Python API Guide**: See [PYTHON_API.md](PYTHON_API.md) for comprehensive examples, error handling, and advanced usage patterns.
 
 ## 📦 Installation
 
@@ -190,8 +226,9 @@ LMCP focuses solely on MCP **client** functionality:
 ## 📚 Documentation
 
 - **[QUICKSTART.md](QUICKSTART.md)** - Complete beginner guide (start here!)
-- **[EXAMPLES.md](EXAMPLES.md)** - Usage examples for all 18 servers
-- **[CLIENT_GUIDE.md](CLIENT_GUIDE.md)** - Detailed usage guide
+- **[PYTHON_API.md](PYTHON_API.md)** - Comprehensive Python API guide with examples
+- **[EXAMPLES.md](EXAMPLES.md)** - CLI usage examples for all 18 servers
+- **[CLIENT_GUIDE.md](CLIENT_GUIDE.md)** - Detailed CLI usage guide
 - **[Model Context Protocol](https://modelcontextprotocol.io/)** - Official MCP specification
 
 ## 🤝 Contributing
