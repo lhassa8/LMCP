@@ -170,7 +170,7 @@ if __name__ == "__main__":
         print("🚀 Starting {name} server...")
         print("📋 Available tools: add, sqrt, greet")
         print("📁 Available resources: server://info, server://stats")
-        print("🌐 Use the LMCP CLI to test: lmcp client list-tools stdio://python {filename}")
+        print("🌐 Use the LMCP CLI to test: lmcp client list-tools \"stdio://python {filename}\"")
         print()
     
     server = {name.replace('-', '').title()}Server()
