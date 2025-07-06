@@ -22,6 +22,7 @@ from .client import Client, connect
 from .server import Server, run_server
 from .types import ConnectionConfig
 from .exceptions import LMCPError
+from .discovery import list_servers, get_categories, get_server_info, test_server_availability, install_server, MCPServerRegistry
 
 console = Console()
 
@@ -447,6 +448,193 @@ def validate(config_file: str) -> None:
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}")
         sys.exit(1)
+
+
+@cli.group()
+def discover() -> None:
+    """Discover and manage MCP servers."""
+    pass
+
+
+@discover.command()
+@click.option("--category", "-c", help="Filter by category")
+@click.option("--search", "-s", help="Search servers by name or description")
+@click.option("--verified", is_flag=True, help="Show only verified servers")
+def list_available(category: str, search: str, verified: bool) -> None:
+    """List available MCP servers."""
+    servers = list_servers(category=category or "", search=search or "")
+    
+    if verified:
+        servers = [s for s in servers if s.get("verified", False)]
+    
+    if not servers:
+        console.print("[yellow]No servers found matching criteria[/yellow]")
+        return
+    
+    table = Table(title="🌐 Available MCP Servers")
+    table.add_column("Name", style="cyan", no_wrap=True)
+    table.add_column("Description", style="white")
+    table.add_column("Category", style="magenta")
+    table.add_column("Verified", style="green")
+    
+    for server in servers:
+        verified = "✅" if server["verified"] else "❓"
+        table.add_row(
+            server["name"],
+            server["description"][:60] + "..." if len(server["description"]) > 60 else server["description"],
+            server["category"],
+            verified
+        )
+    
+    console.print(table)
+    console.print(f"\n💡 Use [cyan]lmcp discover info <name>[/cyan] for details")
+    console.print(f"💡 Use [cyan]lmcp discover install <name>[/cyan] to install")
+
+
+@discover.command()
+def categories() -> None:
+    """List available server categories."""
+    cats = get_categories()
+    
+    console.print("[bold]📂 Server Categories:[/bold]\n")
+    for category in sorted(cats):
+        servers = list_servers(category=category)
+        console.print(f"• [cyan]{category}[/cyan] ({len(servers)} servers)")
+
+
+@discover.command()
+@click.argument("name")
+def info(name: str) -> None:
+    """Show detailed information about a server."""
+    server = get_server_info(name)
+    
+    if not server:
+        console.print(f"[red]Server '{name}' not found[/red]")
+        console.print("💡 Use [cyan]lmcp discover list[/cyan] to see available servers")
+        return
+    
+    # Create info panel
+    info_text = f"""[bold]{server['name']}[/bold]
+📝 {server['description']}
+
+📂 Category: {server['category']}
+🏷️  Tags: {', '.join(server['tags'])}
+✅ Verified: {'Yes' if server['verified'] else 'No'}
+
+🔧 Tools: {', '.join(server['tools'][:5])}{'...' if len(server['tools']) > 5 else ''}
+📁 Resources: {', '.join(server['resources'][:3]) if server['resources'] else 'None'}{'...' if server['resources'] and len(server['resources']) > 3 else ''}
+
+🔗 Repository: {server['repository']}"""
+    
+    console.print(Panel(info_text, title=f"🌐 {server['name']}", border_style="cyan"))
+    
+    # Installation info
+    console.print(f"\n[bold]📦 Installation:[/bold]")
+    console.print(f"[yellow]{server['install_command']}[/yellow]")
+    
+    console.print(f"\n[bold]🚀 Usage:[/bold]")
+    console.print(f"[yellow]{server['run_command']}[/yellow]")
+    
+    # Examples
+    if server['examples']:
+        console.print(f"\n[bold]💡 Examples:[/bold]")
+        for example in server['examples']:
+            console.print(f"[dim]{example}[/dim]")
+    
+    # Quick actions
+    console.print(f"\n[bold]⚡ Quick Actions:[/bold]")
+    console.print(f"• Install: [cyan]lmcp discover install {name}[/cyan]")
+    console.print(f"• Test: [cyan]lmcp discover test {name}[/cyan]")
+
+
+@discover.command()
+@click.argument("name")
+def install(name: str) -> None:
+    """Install a server."""
+    registry = MCPServerRegistry()
+    server = registry.get_by_name(name)
+    
+    if not server:
+        console.print(f"[red]Server '{name}' not found[/red]")
+        return
+    
+    console.print(f"📦 Installing [cyan]{name}[/cyan]...")
+    console.print(f"Command: [yellow]{server.install_command}[/yellow]")
+    
+    # Run installation
+    async def do_install():
+        result = await install_server(server)
+        
+        if result["success"]:
+            console.print(f"✅ [green]{name} installed successfully![/green]")
+            if result["output"]:
+                console.print(f"Output: {result['output']}")
+            
+            console.print(f"\n🚀 Test it with:")
+            console.print(f"[cyan]lmcp discover test {name}[/cyan]")
+            
+        else:
+            console.print(f"❌ [red]Installation failed[/red]")
+            if result["error"]:
+                console.print(f"Error: {result['error']}")
+    
+    asyncio.run(do_install())
+
+
+@discover.command()
+@click.argument("name")
+def test(name: str) -> None:
+    """Test if a server is available and working."""
+    registry = MCPServerRegistry()
+    server = registry.get_by_name(name)
+    
+    if not server:
+        console.print(f"[red]Server '{name}' not found[/red]")
+        return
+    
+    console.print(f"🧪 Testing [cyan]{name}[/cyan]...")
+    
+    async def do_test():
+        result = await test_server_availability(server)
+        
+        if result["available"]:
+            console.print(f"✅ [green]{name} is working![/green]")
+            console.print(f"⏱️  Connection time: {result['test_time']:.2f}s")
+            
+            if result["tools"]:
+                console.print(f"🔧 Available tools: {', '.join(result['tools'][:5])}")
+                if len(result['tools']) > 5:
+                    console.print(f"   ... and {len(result['tools']) - 5} more")
+                    
+            console.print(f"\n💡 Use it in your code:")
+            console.print(f"[dim]async with connect('{server.run_command}') as client:[/dim]")
+            console.print(f"[dim]    tools = await client.list_tools()[/dim]")
+            
+        else:
+            console.print(f"❌ [red]{name} is not available[/red]")
+            if result["error"]:
+                console.print(f"Error: {result['error']}")
+            
+            console.print(f"\n💡 Try installing first:")
+            console.print(f"[cyan]lmcp discover install {name}[/cyan]")
+    
+    asyncio.run(do_test())
+
+
+@discover.command()
+@click.option("--category", "-c", help="Filter by category")
+def browse(category: str) -> None:
+    """Interactive browse mode for servers."""
+    servers = list_servers(category=category or "")
+    
+    console.print("[bold]🌐 MCP Server Browser[/bold]\n")
+    
+    for i, server in enumerate(servers, 1):
+        status = "✅" if server["verified"] else "❓"
+        console.print(f"{i:2d}. {status} [cyan]{server['name']}[/cyan] - {server['description']}")
+    
+    console.print(f"\n💡 Use [cyan]lmcp discover info <name>[/cyan] for details")
+    console.print(f"💡 Use [cyan]lmcp discover install <name>[/cyan] to install")
 
 
 @cli.command()

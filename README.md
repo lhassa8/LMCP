@@ -26,21 +26,32 @@ lmcp create sample my-calculator
 python my_calculator_server.py
 ```
 
-### Use the CLI
+### Use Existing MCP Servers (super easy!)
 ```bash
-# List tools available on your server
-lmcp client list-tools "stdio://python my_calculator_server.py"
+# Discover available servers
+lmcp discover list-available
 
-# Call a tool
-lmcp client call-tool "stdio://python my_calculator_server.py" add -a "a=5" -a "b=3"
+# Get details about any server
+lmcp discover info filesystem
+
+# Install with one command
+lmcp discover install filesystem
+
+# Use immediately in Python
+```
+```python
+async with lmcp.connect("stdio://npx @modelcontextprotocol/server-filesystem ./") as fs:
+    files = await fs.tools.read_directory(path=".")
+    content = await fs.tools.read_file(path="README.md")
 ```
 
-That's it! Your MCP server is ready and fully functional.
+That's it! Any MCP server becomes as easy as a Python library.
 
 ## ✨ Why LMCP?
 
 - **🎯 Dead Simple**: `@lmcp.tool` decorator and you're done!
 - **⚡ One-Line Connections**: `async with lmcp.connect("server://") as client:`
+- **🌐 Server Discovery**: Find, install, and use any MCP server in seconds
 - **🚀 Instant Servers**: Create servers from templates in seconds
 - **🔧 Just Works**: Sensible defaults, auto-detection, error recovery
 - **💪 Production Ready**: Connection pooling, middleware, monitoring
@@ -111,9 +122,38 @@ pip install -e .[examples]
 
 > 🚀 **Coming Soon**: LMCP will be published to PyPI for easier installation with `pip install lmcp`
 
+## 🌐 Server Discovery - Use Any MCP Server Instantly
+
+LMCP includes a powerful discovery system that makes finding and using existing MCP servers incredibly easy:
+
+```bash
+# See all available servers
+lmcp discover list-available
+
+# Get detailed info about any server
+lmcp discover info filesystem
+
+# Install any server with one command
+lmcp discover install filesystem
+
+# Test if it's working
+lmcp discover test filesystem
+```
+
+**Available server categories:**
+- 📁 **File System**: filesystem operations
+- 🔧 **Version Control**: git operations  
+- 🗄️ **Database**: postgres, sqlite operations
+- 🌐 **Web & APIs**: github, brave-search, puppeteer
+- 💬 **Communication**: slack operations
+
+All servers include installation commands, usage examples, and are verified to work!
+
+> 📚 **See [SERVER_DISCOVERY.md](SERVER_DISCOVERY.md) for the complete discovery guide**
+
 ## 💡 Common Use Cases (Copy & Paste!)
 
-### Connect to Existing Servers
+### Use Discovered Servers
 ```python
 import lmcp
 
