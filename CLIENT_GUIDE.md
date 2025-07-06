@@ -43,6 +43,7 @@ lmcp use filesystem list_directory --params '{"path": "."}'
 - `lmcp list` - List all available MCP servers
 - `lmcp install <server>` - Install an MCP server  
 - `lmcp test <server>` - Test if a server is working
+- `lmcp examples <server>` - Show usage examples for a server
 - `lmcp use <server> <tool> --params <json>` - Call a tool on a server
 - `lmcp version` - Show version information
 

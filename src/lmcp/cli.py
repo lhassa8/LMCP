@@ -45,6 +45,7 @@ def cli(ctx: click.Context, verbose: bool) -> None:
         console.print("  [cyan]lmcp list[/cyan]                    # List available MCP servers")
         console.print("  [cyan]lmcp install filesystem[/cyan]     # Install a server")
         console.print("  [cyan]lmcp test filesystem[/cyan]        # Test if a server works")
+        console.print("  [cyan]lmcp examples filesystem[/cyan]    # Show usage examples")
         console.print("\n[bold]🔧 Using Servers:[/bold]")
         console.print("  [cyan]lmcp use filesystem list_directory --params '{\"path\": \".\"}'[/cyan]")
         console.print("\n[bold]📚 Help:[/bold]")
@@ -83,10 +84,111 @@ def test(name: str) -> None:
         if success:
             console.print(f"🎉 {name} is ready to use!")
             console.print(f"💡 Try: [cyan]lmcp use {name} <tool-name>[/cyan]")
+            console.print(f"💡 See examples: [cyan]lmcp examples {name}[/cyan]")
         else:
             console.print(f"💡 Try installing first: [cyan]lmcp install {name}[/cyan]")
     
     asyncio.run(do_test())
+
+
+@cli.command()
+@click.argument("name")
+def examples(name: str) -> None:
+    """Show usage examples for a server."""
+    client = SimpleMCP()
+    if name not in client.servers:
+        console.print(f"❌ Server '{name}' not found")
+        console.print("💡 Run [cyan]lmcp list[/cyan] to see available servers")
+        return
+    
+    server = client.servers[name]
+    
+    # Server-specific examples
+    examples_map = {
+        "filesystem": [
+            ("List directory", 'lmcp use filesystem list_directory --params \'{"path": "."}\''),
+            ("Read file", 'lmcp use filesystem read_file --params \'{"path": "README.md"}\''),
+            ("Write file", 'lmcp use filesystem write_file --params \'{"path": "test.txt", "content": "Hello World"}\''),
+            ("Create directory", 'lmcp use filesystem create_directory --params \'{"path": "new_folder"}\''),
+        ],
+        "hello-world": [
+            ("Echo message", 'lmcp use hello-world echo --params \'{"message": "Hello LMCP!"}\''),
+            ("Add numbers", 'lmcp use hello-world add --params \'{"a": 5, "b": 3}\''),
+            ("Debug info", 'lmcp use hello-world debug --params \'{}\''),
+        ],
+        "wikipedia": [
+            ("Search articles", 'lmcp use wikipedia findPage --params \'{"query": "artificial intelligence"}\''),
+            ("Get page content", 'lmcp use wikipedia getPage --params \'{"title": "Python (programming language)"}\''),
+            ("Today in history", 'lmcp use wikipedia onThisDay --params \'{"month": 7, "day": 6}\''),
+        ],
+        "sequential-thinking": [
+            ("Think step by step", 'lmcp use sequential-thinking sequentialthinking --params \'{"thought": "How to solve this problem"}\''),
+        ],
+        "calculator": [
+            ("Basic calculation", 'lmcp use calculator calculate --params \'{"expression": "2 + 2 * 3"}\''),
+        ],
+        "dad-jokes": [
+            ("Get random joke", 'lmcp use dad-jokes getJoke --params \'{}\''),
+        ],
+        "code-runner": [
+            ("Run Python code", 'lmcp use code-runner run --params \'{"language": "python", "code": "print(\\"Hello World\\")"}\''),
+        ],
+        "kubernetes": [
+            ("List pods", 'lmcp use kubernetes kubectl --params \'{"command": "get pods"}\''),
+            ("Get services", 'lmcp use kubernetes kubectl --params \'{"command": "get services"}\''),
+        ],
+        "mysql": [
+            ("Execute query", 'lmcp use mysql query --params \'{"sql": "SELECT * FROM users LIMIT 5"}\''),
+        ],
+        "desktop-commander": [
+            ("Run terminal command", 'lmcp use desktop-commander exec --params \'{"command": "ls -la"}\''),
+            ("Edit file", 'lmcp use desktop-commander edit --params \'{"file": "test.txt", "content": "Hello"}\''),
+        ],
+        "gmail": [
+            ("List emails", 'lmcp use gmail listEmails --params \'{"maxResults": 10}\''),
+            ("Send email", 'lmcp use gmail sendEmail --params \'{"to": "example@domain.com", "subject": "Test", "body": "Hello"}\''),
+        ],
+        "figma": [
+            ("Get file info", 'lmcp use figma getFile --params \'{"fileId": "your-file-id"}\''),
+            ("List projects", 'lmcp use figma getProjects --params \'{}\''),
+        ],
+        "jsonresume": [
+            ("Get resume", 'lmcp use jsonresume getResume --params \'{}\''),
+            ("Update resume", 'lmcp use jsonresume updateResume --params \'{"section": "basics", "data": {}}\''),
+        ],
+        "filesystem-secure": [
+            ("List directory (secure)", 'lmcp use filesystem-secure list --params \'{"path": "."}\''),
+            ("Read file (secure)", 'lmcp use filesystem-secure read --params \'{"path": "README.md"}\''),
+        ],
+        "filesystem-advanced": [
+            ("Search and replace", 'lmcp use filesystem-advanced searchReplace --params \'{"path": ".", "search": "old", "replace": "new"}\''),
+            ("Batch operations", 'lmcp use filesystem-advanced batchOp --params \'{"operation": "rename", "pattern": "*.txt"}\''),
+        ],
+        "supergateway": [
+            ("Proxy request", 'lmcp use supergateway proxy --params \'{"url": "http://localhost:3000", "method": "GET"}\''),
+        ],
+        "elasticsearch": [
+            ("Search index", 'lmcp use elasticsearch search --params \'{"index": "my-index", "query": "test"}\''),
+            ("Create document", 'lmcp use elasticsearch index --params \'{"index": "my-index", "document": {"title": "Test"}}\''),
+        ],
+        "basic-mcp": [
+            ("Basic operation", 'lmcp use basic-mcp hello --params \'{"name": "World"}\''),
+        ],
+    }
+    
+    console.print(f"[bold green]📋 Examples for {name}[/bold green]\n")
+    console.print(f"[bold]📝 Description:[/bold] {server.description}")
+    console.print(f"[bold]📦 Install:[/bold] [cyan]lmcp install {name}[/cyan]")
+    console.print(f"[bold]🧪 Test:[/bold] [cyan]lmcp test {name}[/cyan]\n")
+    
+    if name in examples_map:
+        console.print("[bold]💡 Usage Examples:[/bold]")
+        for desc, cmd in examples_map[name]:
+            console.print(f"  [yellow]#{desc}[/yellow]")
+            console.print(f"  [cyan]{cmd}[/cyan]\n")
+    else:
+        console.print("[yellow]⚠️  No examples available yet for this server[/yellow]")
+        console.print("💡 Try: [cyan]lmcp test {name}[/cyan] to see available tools")
 
 
 @cli.command()

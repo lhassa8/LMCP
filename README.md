@@ -85,6 +85,14 @@ lmcp install filesystem
 lmcp test filesystem
 ```
 
+### Get examples for any server
+```bash
+# See examples for any server
+lmcp examples filesystem
+lmcp examples hello-world 
+lmcp examples wikipedia
+```
+
 ### Use server tools
 ```bash
 # Filesystem operations
@@ -96,9 +104,6 @@ lmcp use hello-world echo --params '{"message": "Hello LMCP!"}'
 
 # Wikipedia search
 lmcp use wikipedia findPage --params '{"query": "artificial intelligence"}'
-
-# Get Wikipedia page content
-lmcp use wikipedia getPage --params '{"title": "Python (programming language)"}'
 ```
 
 ## 📦 Installation
@@ -185,6 +190,7 @@ LMCP focuses solely on MCP **client** functionality:
 ## 📚 Documentation
 
 - **[QUICKSTART.md](QUICKSTART.md)** - Complete beginner guide (start here!)
+- **[EXAMPLES.md](EXAMPLES.md)** - Usage examples for all 18 servers
 - **[CLIENT_GUIDE.md](CLIENT_GUIDE.md)** - Detailed usage guide
 - **[Model Context Protocol](https://modelcontextprotocol.io/)** - Official MCP specification
 

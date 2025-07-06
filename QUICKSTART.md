@@ -53,6 +53,9 @@ lmcp --help
 # See all available servers
 lmcp list
 
+# Get examples for hello-world server
+lmcp examples hello-world
+
 # Install the hello-world server
 lmcp install hello-world
 
