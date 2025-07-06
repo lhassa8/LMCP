@@ -2,13 +2,22 @@
 
 LMCP makes working with Claude's Model Context Protocol super easy. Here's how to get started instantly:
 
-## 📦 Step 1: Install (10 seconds)
+## 📦 Step 1: Set Up Environment (30 seconds)
 
 ```bash
+# Create a clean Python environment (recommended!)
+python -m venv lmcp-env
+
+# Activate it
+source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
+
+# Install LMCP
 pip install lmcp
 ```
 
-That's it! LMCP is now installed.
+> 💡 **Why use a virtual environment?** It keeps LMCP and its dependencies separate from your system Python, preventing conflicts.
+
+**Environment ready!** ✅
 
 ## 🎯 Step 2: Try It Out (30 seconds)
 
@@ -75,6 +84,9 @@ Save as `my_server.py`, run `python my_server.py` - your MCP server is live! �
 Open another terminal and test your server:
 
 ```bash
+# First, activate your environment in the new terminal
+source lmcp-env/bin/activate  # Windows: lmcp-env\Scripts\activate
+
 # List tools
 lmcp client list-tools stdio://python my_server.py
 
@@ -84,6 +96,8 @@ lmcp client call-tool stdio://python my_server.py add --args a=5 --args b=3
 # Get a resource
 lmcp client list-resources stdio://python my_server.py
 ```
+
+> 🔄 **Remember**: Activate your virtual environment (`source lmcp-env/bin/activate`) in every new terminal!
 
 ## 🎨 That's It! You're Ready!
 
@@ -170,6 +184,21 @@ asyncio.run(use_calculator())
 
 ## 🆘 Need Help?
 
+### Common Issues & Solutions
+
+**"Command not found: lmcp"**
+- Make sure your virtual environment is activated: `source lmcp-env/bin/activate`
+- Try reinstalling: `pip install --upgrade lmcp`
+
+**"Permission denied" or "Access denied"**
+- Use a virtual environment instead of system Python
+- On Windows: Run terminal as administrator only if needed
+
+**"Module not found" errors**
+- Activate your virtual environment in every new terminal
+- Check Python version: `python --version` (needs 3.9+)
+
+### More Help
 - **Examples**: Check the `examples/` folder for more ideas
 - **CLI Help**: Run `lmcp --help` for all commands
 - **Issues**: Open an issue at https://github.com/lhassa8/LMCP/issues

@@ -51,23 +51,38 @@ That's it! Your MCP server is ready to use.
 - **💪 Production Ready**: Connection pooling, middleware, monitoring
 - **🐍 Pure Python**: Type hints, async/await, modern Python patterns
 
-## ⚡ Get Started in 30 Seconds
+## ⚡ Get Started in 60 Seconds
 
+### Option 1: Automatic Setup (Easiest!)
 ```bash
-# 1. Install
+# Download and run the setup script
+curl -O https://raw.githubusercontent.com/lhassa8/LMCP/main/setup_env.py
+python setup_env.py
+```
+
+### Option 2: Manual Setup
+```bash
+# 1. Create a clean Python environment
+python -m venv lmcp-env
+source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
+
+# 2. Install LMCP
 pip install lmcp
 
-# 2. Create a server
+# 3. Create a server instantly
 lmcp create sample my-tools
 
-# 3. Run it
+# 4. Run it
 python my_tools_server.py
 
-# 4. Test it (in another terminal)
+# 5. Test it (in another terminal - remember to activate env!)
+source lmcp-env/bin/activate  # Windows: lmcp-env\Scripts\activate
 lmcp client list-tools stdio://python my_tools_server.py
 ```
 
 **That's it!** You now have a working MCP server. 🎉
+
+> 💡 **Pro tip**: Always use a virtual environment to avoid dependency conflicts!
 
 ## 📦 Installation Options
 
