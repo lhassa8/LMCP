@@ -203,4 +203,24 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # Use direct run_server call instead of asyncio.run(main())
+    server = CalculatorServer()
+    print("🧮 Starting Calculator MCP Server...")
+    print("📊 Features:")
+    print("  - Basic arithmetic operations")
+    print("  - Advanced math functions") 
+    print("  - Calculation history")
+    print("  - Statistics tracking")
+    print("  - Math problem generation")
+    print("  - Help prompts")
+    print()
+    print(f"🚀 Server: {server.name}")
+    print(f"🔧 Tools: {len(server.list_tools())}")
+    print(f"📁 Resources: {len(server.list_resources())}")
+    print(f"💬 Prompts: {len(server.list_prompts())}")
+    print()
+    
+    try:
+        run_server(server)
+    except KeyboardInterrupt:
+        print("\n👋 Calculator server stopped")
