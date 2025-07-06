@@ -11,36 +11,31 @@ A powerful yet easy-to-use Python wrapper for Claude's Model Context Protocol (M
 
 ### Installation
 ```bash
-pip install lmcp
-```
+# Install from GitHub (current method)
+pip install git+https://github.com/lhassa8/LMCP.git
 
-### Simple Usage
-```python
-import lmcp
-
-# Connect to a filesystem server (one line!)
-async with lmcp.connect("filesystem://./") as fs:
-    files = await fs.tools.list_files(path=".")
-    content = await fs.tools.read_file(path="README.md")
-    print(f"Found {len(files)} files")
+# Coming soon: pip install lmcp
 ```
 
 ### Create a Server (super easy!)
-```python
-import lmcp
+```bash
+# Create a sample server instantly
+lmcp create sample my-calculator
 
-@lmcp.server("my-tools")
-class MyServer:
-    @lmcp.tool("Add two numbers")
-    def add(self, a: int, b: int) -> int:
-        return a + b
-
-# Run it!
-if __name__ == "__main__":
-    lmcp.run_server(MyServer())
+# Run it 
+python my_calculator_server.py
 ```
 
-That's it! Your MCP server is ready to use.
+### Use the CLI
+```bash
+# List tools available on your server
+lmcp client list-tools "stdio://python my_calculator_server.py"
+
+# Call a tool
+lmcp client call-tool "stdio://python my_calculator_server.py" add -a "a=5" -a "b=3"
+```
+
+That's it! Your MCP server is ready and fully functional.
 
 ## ✨ Why LMCP?
 
@@ -53,7 +48,6 @@ That's it! Your MCP server is ready to use.
 
 ## ⚡ Get Started in 60 Seconds
 
-### Option 1: Install from GitHub (Current)
 ```bash
 # 1. Create a clean Python environment
 python -m venv lmcp-env
@@ -65,13 +59,12 @@ pip install git+https://github.com/lhassa8/LMCP.git
 # 3. Create a server instantly
 lmcp create sample my-tools
 
-# 4. Run it
-python my_tools_server.py
-
-# 5. Test it (in another terminal - remember to activate env!)
-source lmcp-env/bin/activate  # Windows: lmcp-env\Scripts\activate
-lmcp client list-tools stdio://python my_tools_server.py
+# 4. Test it immediately (no separate terminal needed!)
+lmcp client list-tools "stdio://python my_tools_server.py"
+lmcp client call-tool "stdio://python my_tools_server.py" add -a "a=10" -a "b=5"
 ```
+
+**That's it!** You now have a working MCP server. 🎉
 
 ### Option 2: Development Install (If you have the repo)
 ```bash

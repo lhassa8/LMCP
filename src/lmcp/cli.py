@@ -26,7 +26,7 @@ from .exceptions import LMCPError
 console = Console()
 
 
-@click.group()
+@click.group(invoke_without_command=True)
 @click.version_option(version=__version__)
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
 @click.option("--config", "-c", type=click.Path(exists=True), help="Configuration file path")
@@ -44,6 +44,17 @@ def cli(ctx: click.Context, verbose: bool, config: Optional[str]) -> None:
     ctx.ensure_object(dict)
     ctx.obj["verbose"] = verbose
     ctx.obj["config"] = config
+    
+    # If no command is provided, show quick help
+    if ctx.invoked_subcommand is None:
+        console.print("[bold green]🚀 LMCP - Lightweight Model Context Protocol[/bold green]\n")
+        console.print("Get started in 30 seconds:")
+        console.print("  [cyan]lmcp create sample my-server[/cyan]  # Create a sample server")
+        console.print("  [cyan]lmcp client list-tools \"stdio://python my_server_server.py\"[/cyan]  # Test it")
+        console.print("\nMore commands:")
+        console.print("  [cyan]lmcp --help[/cyan]     # Full help")
+        console.print("  [cyan]lmcp version[/cyan]    # Version info")
+        console.print("\n💡 Put URIs in quotes to avoid shell issues!")
 
 
 @cli.group()
@@ -109,7 +120,8 @@ def list_tools(ctx: click.Context, uri: str, timeout: float, format: str) -> Non
                 
                 if format == "json":
                     tools_data = [tool.model_dump() for tool in tools]
-                    console.print(JSON({"tools": tools_data}))
+                    import json
+                    console.print(json.dumps({"tools": tools_data}, indent=2))
                 else:
                     if not tools:
                         console.print("[yellow]No tools available[/yellow]")
@@ -129,6 +141,16 @@ def list_tools(ctx: click.Context, uri: str, timeout: float, format: str) -> Non
                 
         except Exception as e:
             console.print(f"[red]Error:[/red] {e}")
+            
+            # Provide helpful suggestions for common issues
+            error_str = str(e).lower()
+            if any(word in error_str for word in ["connection", "timeout", "failed to connect", "initialize", "stdio"]):
+                console.print("\n[yellow]💡 Troubleshooting tips:[/yellow]")
+                console.print("   • Make sure the server file exists and runs without errors")
+                console.print("   • Try putting the URI in quotes: \"stdio://python server.py\"")
+                console.print("   • Check if the server prints any startup messages (they can interfere with stdio)")
+                console.print("   • Verify the Python path is correct")
+            
             sys.exit(1)
     
     asyncio.run(_list_tools())
@@ -200,7 +222,8 @@ def list_resources(ctx: click.Context, uri: str, timeout: float, format: str) ->
                 
                 if format == "json":
                     resources_data = [resource.model_dump() for resource in resources]
-                    console.print(JSON({"resources": resources_data}))
+                    import json
+                    console.print(json.dumps({"resources": resources_data}, indent=2))
                 else:
                     if not resources:
                         console.print("[yellow]No resources available[/yellow]")
@@ -431,7 +454,7 @@ def version() -> None:
     """Show LMCP version information."""
     console.print(f"[bold]LMCP[/bold] version [green]{__version__}[/green]")
     console.print("Lightweight Model Context Protocol wrapper")
-    console.print("https://github.com/yourusername/LMCP")
+    console.print("https://github.com/lhassa8/LMCP")
 
 
 def main() -> None:

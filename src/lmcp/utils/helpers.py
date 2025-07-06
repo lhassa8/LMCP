@@ -179,8 +179,23 @@ if __name__ == "__main__":
     
     Path(filename).write_text(content)
     print(f"✅ Created sample server: {filename}")
+    
+    # Quick validation - try to import the server
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("test_server", filename)
+        if spec and spec.loader:
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            print("✅ Server validation: Import successful")
+        else:
+            print("⚠️  Server validation: Could not load module")
+    except Exception as e:
+        print(f"⚠️  Server validation: {e}")
+        print("💡 This might be normal if the server has external dependencies")
+    
     print(f"🚀 Run with: python {filename}")
-    print(f"🧪 Test with: lmcp client list-tools stdio://python {filename}")
+    print(f"🧪 Test with: lmcp client list-tools \"stdio://python {filename}\"")
     
     return filename
 
