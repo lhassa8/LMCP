@@ -32,10 +32,13 @@ lmcp test filesystem
 lmcp use filesystem list_directory --params '{"path": "."}'
 ```
 
-## 🌐 Available Servers
+## 🌐 Available Servers (18 Total)
 
 ### Verified Working ✅
 - **filesystem** - File operations (read, write, list files)
+- **hello-world** - Simple Hello World MCP server for testing (3 tools)
+- **sequential-thinking** - Sequential thinking and problem solving tools (1 tool)
+- **wikipedia** - Wikipedia API interactions and search (4 tools)
 
 ### Community Servers ⚠️  
 - **desktop-commander** - Terminal operations and file editing
@@ -45,6 +48,13 @@ lmcp use filesystem list_directory --params '{"path": "."}'
 - **filesystem-secure** - Secure filesystem with relative path support
 - **filesystem-advanced** - Advanced file operations with search and replace
 - **supergateway** - Run MCP stdio servers over SSE/HTTP
+- **calculator** - Calculator for precise numerical calculations
+- **dad-jokes** - The one and only MCP Server for dad jokes
+- **code-runner** - Code execution and running capabilities
+- **kubernetes** - Kubernetes cluster interactions via kubectl
+- **elasticsearch** - Elasticsearch search and indexing operations
+- **basic-mcp** - Basic MCP server implementation
+- **mysql** - MySQL database interactions
 
 ## 📖 Usage Examples
 
@@ -59,16 +69,20 @@ lmcp install filesystem
 lmcp test filesystem
 ```
 
-### Use filesystem tools
+### Use server tools
 ```bash
-# List directory contents
+# Filesystem operations
 lmcp use filesystem list_directory --params '{"path": "."}'
-
-# Read a file
 lmcp use filesystem read_file --params '{"path": "README.md"}'
 
-# Write to a file  
-lmcp use filesystem write_file --params '{"path": "test.txt", "content": "Hello World"}'
+# Hello World testing
+lmcp use hello-world echo --params '{"message": "Hello LMCP!"}'
+
+# Wikipedia search
+lmcp use wikipedia findPage --params '{"query": "artificial intelligence"}'
+
+# Get Wikipedia page content
+lmcp use wikipedia getPage --params '{"title": "Python (programming language)"}'
 ```
 
 ## 📦 Installation

@@ -26,10 +26,13 @@ lmcp use filesystem list_directory --params '{"path": "."}'
 - `lmcp use <server> <tool> --params <json>` - Call a tool on a server
 - `lmcp version` - Show version information
 
-## Available Servers
+## Available Servers (18 Total)
 
-### Verified Servers ✅
-- **filesystem** - File operations (read, write, list files)
+### Verified Working ✅
+- **filesystem** - File operations (read, write, list files) - 12 tools
+- **hello-world** - Simple Hello World MCP server for testing - 3 tools
+- **sequential-thinking** - Sequential thinking and problem solving tools - 1 tool 
+- **wikipedia** - Wikipedia API interactions and search - 4 tools
 
 ### Community Servers ⚠️  
 - **desktop-commander** - Terminal operations and file editing
@@ -39,6 +42,13 @@ lmcp use filesystem list_directory --params '{"path": "."}'
 - **filesystem-secure** - Secure filesystem with relative path support
 - **filesystem-advanced** - Advanced file operations with search and replace
 - **supergateway** - Run MCP stdio servers over SSE/HTTP
+- **calculator** - Calculator for precise numerical calculations
+- **dad-jokes** - The one and only MCP Server for dad jokes
+- **code-runner** - Code execution and running capabilities
+- **kubernetes** - Kubernetes cluster interactions via kubectl
+- **elasticsearch** - Elasticsearch search and indexing operations
+- **basic-mcp** - Basic MCP server implementation
+- **mysql** - MySQL database interactions
 
 ## Requirements
 

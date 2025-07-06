@@ -85,6 +85,78 @@ class SimpleMCP:
                 install_cmd="npm install -g supergateway", 
                 run_cmd="npx supergateway",
                 verified=False
+            ),
+            
+            # No-credential utility servers
+            "hello-world": Server(
+                name="hello-world",
+                description="Simple Hello World MCP server for testing",
+                install_cmd="npm install -g mcp-hello-world",
+                run_cmd="npx mcp-hello-world",
+                verified=True
+            ),
+            "calculator": Server(
+                name="calculator",
+                description="Calculator for precise numerical calculations",
+                install_cmd="npm install -g @wrtnlabs/calculator-mcp",
+                run_cmd="npx @wrtnlabs/calculator-mcp",
+                verified=False
+            ),
+            "dad-jokes": Server(
+                name="dad-jokes",
+                description="The one and only MCP Server for dad jokes",
+                install_cmd="npm install -g model-context-protocol",
+                run_cmd="npx model-context-protocol",
+                verified=False
+            ),
+            "sequential-thinking": Server(
+                name="sequential-thinking",
+                description="Sequential thinking and problem solving tools",
+                install_cmd="npm install -g @modelcontextprotocol/server-sequential-thinking",
+                run_cmd="npx @modelcontextprotocol/server-sequential-thinking",
+                verified=True
+            ),
+            "wikipedia": Server(
+                name="wikipedia",
+                description="Wikipedia API interactions and search",
+                install_cmd="npm install -g @shelm/wikipedia-mcp-server",
+                run_cmd="npx @shelm/wikipedia-mcp-server",
+                verified=True
+            ),
+            "code-runner": Server(
+                name="code-runner",
+                description="Code execution and running capabilities",
+                install_cmd="npm install -g mcp-server-code-runner",
+                run_cmd="npx mcp-server-code-runner",
+                verified=False
+            ),
+            "kubernetes": Server(
+                name="kubernetes",
+                description="Kubernetes cluster interactions via kubectl",
+                install_cmd="npm install -g mcp-server-kubernetes",
+                run_cmd="npx mcp-server-kubernetes",
+                verified=False
+            ),
+            "elasticsearch": Server(
+                name="elasticsearch",
+                description="Elasticsearch search and indexing operations",
+                install_cmd="npm install -g @elastic/mcp-server-elasticsearch",
+                run_cmd="npx @elastic/mcp-server-elasticsearch",
+                verified=False
+            ),
+            "basic-mcp": Server(
+                name="basic-mcp",
+                description="Basic MCP server implementation",
+                install_cmd="npm install -g mcp-server",
+                run_cmd="npx mcp-server",
+                verified=False
+            ),
+            "mysql": Server(
+                name="mysql",
+                description="MySQL database interactions",
+                install_cmd="npm install -g @benborla29/mcp-server-mysql",
+                run_cmd="npx @benborla29/mcp-server-mysql",
+                verified=False
             )
         }
     
