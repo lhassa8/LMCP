@@ -614,11 +614,31 @@ def test(name: str) -> None:
             console.print(f"❌ [red]{name} is not available[/red]")
             if result["error"]:
                 console.print(f"Error: {result['error']}")
+                
+                # Provide specific troubleshooting tips
+                if "npx command not found" in result["error"]:
+                    console.print("\n🔧 [yellow]Troubleshooting:[/yellow]")
+                    console.print("1. Install Node.js: https://nodejs.org/")
+                    console.print("2. Verify installation: [cyan]npx --version[/cyan]")
+                    console.print("3. Then install the server: [cyan]lmcp discover install filesystem[/cyan]")
+                elif "npx command failed" in result["error"]:
+                    console.print("\n🔧 [yellow]Troubleshooting:[/yellow]")
+                    console.print("1. Install the server package: [cyan]lmcp discover install filesystem[/cyan]")
+                    console.print("2. Check Node.js version: [cyan]node --version[/cyan]")
+                    console.print("3. Try reinstalling: [cyan]npm uninstall -g @modelcontextprotocol/server-filesystem && npm install -g @modelcontextprotocol/server-filesystem[/cyan]")
+                elif "Invalid URI scheme" in result["error"]:
+                    console.print("\n🔧 [yellow]Troubleshooting:[/yellow]")
+                    console.print("This appears to be a configuration issue. Please report this bug.")
             
             console.print(f"\n💡 Try installing first:")
             console.print(f"[cyan]lmcp discover install {name}[/cyan]")
     
     asyncio.run(do_test())
+
+
+@discover.command()
+def scan() -> None:
+    \"\"\"Scan for new MCP servers automatically.\"\"\"\n    from .auto_discovery import scan_for_new_servers\n    \n    async def do_scan():\n        return await scan_for_new_servers()\n    \n    result = asyncio.run(do_scan())\n    sys.exit(result)
 
 
 @discover.command()

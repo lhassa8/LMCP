@@ -7,6 +7,8 @@ Provides communication over standard input/output.
 import asyncio
 import json
 import logging
+import platform
+import shlex
 from typing import Any, Dict, Optional
 from asyncio import StreamReader, StreamWriter
 
@@ -41,13 +43,34 @@ class StdioTransport(Transport):
             
             logger.debug(f"Starting process: {self._command}")
             
-            # Start the process
-            self._process = await asyncio.create_subprocess_shell(
-                self._command,
-                stdin=asyncio.subprocess.PIPE,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
-            )
+            # Handle Windows vs Unix command execution
+            if platform.system() == "Windows":
+                # On Windows, use shell=True for better command parsing
+                self._process = await asyncio.create_subprocess_shell(
+                    self._command,
+                    stdin=asyncio.subprocess.PIPE,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                    shell=True
+                )
+            else:
+                # On Unix-like systems, use shlex for proper argument parsing
+                try:
+                    args = shlex.split(self._command)
+                    self._process = await asyncio.create_subprocess_exec(
+                        *args,
+                        stdin=asyncio.subprocess.PIPE,
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE
+                    )
+                except ValueError:
+                    # Fallback to shell if shlex fails
+                    self._process = await asyncio.create_subprocess_shell(
+                        self._command,
+                        stdin=asyncio.subprocess.PIPE,
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE
+                    )
             
             self._reader = self._process.stdout
             self._writer = self._process.stdin

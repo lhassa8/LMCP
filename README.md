@@ -39,6 +39,7 @@ lmcp discover install filesystem
 
 # Use immediately in Python
 ```
+
 ```python
 async with lmcp.connect("stdio://npx @modelcontextprotocol/server-filesystem ./") as fs:
     files = await fs.tools.read_directory(path=".")
@@ -300,6 +301,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - 💬 **CLI Help**: Run `lmcp --help` for all commands
 - 🐛 **Issues**: Open an issue at https://github.com/lhassa8/LMCP/issues
 - 📚 **Quick Reference**: See [QUICKSTART.md](QUICKSTART.md)
+- 🪟 **Windows Users**: See [WINDOWS_TROUBLESHOOTING.md](WINDOWS_TROUBLESHOOTING.md)
 
 ## 🔗 Links
 

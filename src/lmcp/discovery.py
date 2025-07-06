@@ -34,6 +34,7 @@ class MCPServerRegistry:
     
     def __init__(self):
         self.servers = self._load_builtin_servers()
+        self._load_extended_servers()
     
     def _load_builtin_servers(self) -> Dict[str, ServerInfo]:
         """Load the built-in registry of popular MCP servers."""
@@ -177,6 +178,16 @@ class MCPServerRegistry:
         
         return servers
     
+    def _load_extended_servers(self) -> None:
+        """Load extended servers from the extended registry."""
+        try:
+            from .extended_registry import get_extended_servers
+            extended_servers = get_extended_servers()
+            self.servers.update(extended_servers)
+        except ImportError:
+            # Extended registry not available, skip
+            pass
+    
     def search(self, query: str = "", category: str = "", tags: List[str] = None) -> List[ServerInfo]:
         """Search for servers by query, category, or tags."""
         results = []
@@ -214,6 +225,8 @@ async def test_server_availability(server_info: ServerInfo, timeout: float = 5.0
     """Test if a server is available and working."""
     from .client import connect
     from .exceptions import ConnectionError
+    import shutil
+    import platform
     
     result = {
         "available": False,
@@ -226,15 +239,34 @@ async def test_server_availability(server_info: ServerInfo, timeout: float = 5.0
         import time
         start_time = time.time()
         
+        # Prepare the run command with proper path substitution
+        run_command = server_info.run_command.replace("/path/to/directory", ".").replace("/path/to/database.db", "./test.db")
+        
+        # For Windows, check if npx is available
+        if platform.system() == "Windows" and run_command.startswith("npx "):
+            if not shutil.which("npx"):
+                result["error"] = "npx command not found. Please install Node.js and npm first."
+                return result
+        
+        # Add stdio:// prefix if not present
+        if not run_command.startswith("stdio://"):
+            run_command = f"stdio://{run_command}"
+        
         # Try to connect with timeout
-        async with connect(server_info.run_command.replace("/path/to/directory", ".").replace("/path/to/database.db", "./test.db")) as client:
+        async with connect(run_command) as client:
             tools = await client.list_tools()
             result["available"] = True
             result["tools"] = [t.name for t in tools]
             result["test_time"] = time.time() - start_time
             
     except ConnectionError as e:
-        result["error"] = f"Connection failed: {str(e)}"
+        error_msg = str(e)
+        if "Unsupported scheme" in error_msg:
+            result["error"] = f"Connection failed: Invalid URI scheme. Expected stdio://, http://, or ws://"
+        elif "npx" in error_msg and platform.system() == "Windows":
+            result["error"] = "npx command failed. Please ensure Node.js and the MCP server package are installed."
+        else:
+            result["error"] = f"Connection failed: {error_msg}"
     except Exception as e:
         result["error"] = f"Test failed: {str(e)}"
     
