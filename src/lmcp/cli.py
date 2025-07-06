@@ -638,7 +638,14 @@ def test(name: str) -> None:
 
 @discover.command()
 def scan() -> None:
-    \"\"\"Scan for new MCP servers automatically.\"\"\"\n    from .auto_discovery import scan_for_new_servers\n    \n    async def do_scan():\n        return await scan_for_new_servers()\n    \n    result = asyncio.run(do_scan())\n    sys.exit(result)
+    """Scan for new MCP servers automatically."""
+    from .auto_discovery import scan_for_new_servers
+    
+    async def do_scan():
+        return await scan_for_new_servers()
+    
+    result = asyncio.run(do_scan())
+    sys.exit(result)
 
 
 @discover.command()

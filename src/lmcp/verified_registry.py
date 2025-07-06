@@ -5,12 +5,11 @@ This module contains only VERIFIED, working MCP servers that actually exist
 and can be installed/tested successfully.
 """
 
-from dataclasses import dataclass
 from typing import Dict, List
-from .discovery import ServerInfo
 
-def get_verified_servers() -> Dict[str, ServerInfo]:
+def get_verified_servers():
     """Get only verified, working MCP servers."""
+    from .discovery import ServerInfo
     
     return {
         # Official ModelContextProtocol Servers (VERIFIED)
