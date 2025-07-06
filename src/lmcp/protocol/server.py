@@ -340,12 +340,26 @@ class MCPServer:
     
     async def _handle_list_resources(self, request: ListResourcesRequest) -> ListResourcesResponse:
         """Handle list resources request."""
-        # This would typically call the registered resource handler to get available resources
-        # For now, return empty list
-        return ListResourcesResponse(
-            id=request.id,
-            result={"resources": []}
-        )
+        if not self._resources_list_handler:
+            logger.warning("No resources list handler registered")
+            return ListResourcesResponse(
+                id=request.id,
+                result={"resources": []}
+            )
+        
+        try:
+            resources = await self._resources_list_handler()
+            return ListResourcesResponse(
+                id=request.id,
+                result={"resources": resources}
+            )
+        except Exception as e:
+            logger.error(f"Failed to list resources: {e}")
+            return ListResourcesResponse(
+                id=request.id,
+                result={"resources": []},
+                error={"code": -32603, "message": f"Failed to list resources: {e}"}
+            )
     
     async def _handle_read_resource(self, request: ReadResourceRequest) -> ReadResourceResponse:
         """Handle read resource request."""
@@ -380,12 +394,26 @@ class MCPServer:
     
     async def _handle_list_prompts(self, request: ListPromptsRequest) -> ListPromptsResponse:
         """Handle list prompts request."""
-        # This would typically call the registered prompt handler to get available prompts
-        # For now, return empty list
-        return ListPromptsResponse(
-            id=request.id,
-            result={"prompts": []}
-        )
+        if not self._prompts_list_handler:
+            logger.warning("No prompts list handler registered")
+            return ListPromptsResponse(
+                id=request.id,
+                result={"prompts": []}
+            )
+        
+        try:
+            prompts = await self._prompts_list_handler()
+            return ListPromptsResponse(
+                id=request.id,
+                result={"prompts": prompts}
+            )
+        except Exception as e:
+            logger.error(f"Failed to list prompts: {e}")
+            return ListPromptsResponse(
+                id=request.id,
+                result={"prompts": []},
+                error={"code": -32603, "message": f"Failed to list prompts: {e}"}
+            )
     
     async def _handle_get_prompt(self, request: GetPromptRequest) -> GetPromptResponse:
         """Handle get prompt request."""

@@ -108,7 +108,8 @@ def list_tools(ctx: click.Context, uri: str, timeout: float, format: str) -> Non
                 tools = await client.list_tools()
                 
                 if format == "json":
-                    console.print(JSON([tool.model_dump() for tool in tools]))
+                    tools_data = [tool.model_dump() for tool in tools]
+                    console.print(JSON({"tools": tools_data}))
                 else:
                     if not tools:
                         console.print("[yellow]No tools available[/yellow]")
@@ -198,7 +199,8 @@ def list_resources(ctx: click.Context, uri: str, timeout: float, format: str) ->
                 resources = await client.list_resources()
                 
                 if format == "json":
-                    console.print(JSON([resource.model_dump() for resource in resources]))
+                    resources_data = [resource.model_dump() for resource in resources]
+                    console.print(JSON({"resources": resources_data}))
                 else:
                     if not resources:
                         console.print("[yellow]No resources available[/yellow]")

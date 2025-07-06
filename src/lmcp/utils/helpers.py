@@ -163,11 +163,15 @@ class {name.replace('-', '').title()}Server:
         }}
 
 if __name__ == "__main__":
-    print("🚀 Starting {name} server...")
-    print("📋 Available tools: add, sqrt, greet")
-    print("📁 Available resources: server://info, server://stats")
-    print("🌐 Use the LMCP CLI to test: lmcp client list-tools stdio://python {filename}")
-    print()
+    import sys
+    
+    # Only show startup messages if not in stdio mode
+    if sys.stdout.isatty():
+        print("🚀 Starting {name} server...")
+        print("📋 Available tools: add, sqrt, greet")
+        print("📁 Available resources: server://info, server://stats")
+        print("🌐 Use the LMCP CLI to test: lmcp client list-tools stdio://python {filename}")
+        print()
     
     server = {name.replace('-', '').title()}Server()
     lmcp.run_server(server)
