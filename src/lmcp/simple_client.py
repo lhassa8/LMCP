@@ -1,0 +1,325 @@
+#!/usr/bin/env python3
+"""
+Simple MCP Client - Actually Works!
+
+A dead simple way to discover and use MCP servers without complex protocols.
+"""
+
+import asyncio
+import json
+import subprocess
+import sys
+import os
+from dataclasses import dataclass
+from typing import Dict, List, Optional
+import platform
+
+@dataclass
+class Server:
+    name: str
+    description: str
+    install_cmd: str
+    run_cmd: str
+    verified: bool = False
+
+class SimpleMCP:
+    """Dead simple MCP client that actually works."""
+    
+    def __init__(self):
+        self.servers = {
+            # Verified working servers
+            "filesystem": Server(
+                name="filesystem",
+                description="File operations (read, write, list files)",
+                install_cmd="npm install -g @modelcontextprotocol/server-filesystem",
+                run_cmd="npx @modelcontextprotocol/server-filesystem .",
+                verified=True
+            ),
+            
+            # Popular community servers 
+            "desktop-commander": Server(
+                name="desktop-commander", 
+                description="Terminal operations and file editing",
+                install_cmd="npm install -g @wonderwhy-er/desktop-commander",
+                run_cmd="npx @wonderwhy-er/desktop-commander",
+                verified=False
+            ),
+            "gmail": Server(
+                name="gmail",
+                description="Gmail operations with auto authentication", 
+                install_cmd="npm install -g @gongrzhe/server-gmail-autoauth-mcp",
+                run_cmd="npx @gongrzhe/server-gmail-autoauth-mcp",
+                verified=False
+            ),
+            "figma": Server(
+                name="figma",
+                description="Figma design operations",
+                install_cmd="npm install -g figma-mcp",
+                run_cmd="npx figma-mcp",
+                verified=False
+            ),
+            "jsonresume": Server(
+                name="jsonresume", 
+                description="JSON Resume operations",
+                install_cmd="npm install -g jsonresume-mcp",
+                run_cmd="npx jsonresume-mcp",
+                verified=False
+            ),
+            "filesystem-secure": Server(
+                name="filesystem-secure",
+                description="Secure filesystem with relative path support",
+                install_cmd="npm install -g @m_sea_bass/relpath-filesystem-mcp", 
+                run_cmd="npx @m_sea_bass/relpath-filesystem-mcp",
+                verified=False
+            ),
+            "filesystem-advanced": Server(
+                name="filesystem-advanced",
+                description="Advanced file operations with search and replace",
+                install_cmd="npm install -g @cyanheads/filesystem-mcp-server",
+                run_cmd="npx @cyanheads/filesystem-mcp-server",
+                verified=False
+            ),
+            "supergateway": Server(
+                name="supergateway",
+                description="Run MCP stdio servers over SSE/HTTP",
+                install_cmd="npm install -g supergateway", 
+                run_cmd="npx supergateway",
+                verified=False
+            )
+        }
+    
+    def list_servers(self):
+        """List available servers."""
+        print("🌐 Available MCP Servers:")
+        print("=" * 50)
+        for name, server in self.servers.items():
+            status = "✅" if server.verified else "⚠️"
+            print(f"{status} {name:15} - {server.description}")
+        print()
+    
+    def install_server(self, name: str) -> bool:
+        """Install a server using npm."""
+        if name not in self.servers:
+            print(f"❌ Server '{name}' not found")
+            return False
+        
+        server = self.servers[name]
+        print(f"📦 Installing {name}...")
+        print(f"Command: {server.install_cmd}")
+        
+        try:
+            # Run npm install
+            result = subprocess.run(
+                server.install_cmd.split(),
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            
+            if result.returncode == 0:
+                print(f"✅ {name} installed successfully!")
+                if result.stdout:
+                    print("Output:", result.stdout.strip())
+                return True
+            else:
+                print(f"❌ Installation failed")
+                print("Error:", result.stderr.strip())
+                return False
+                
+        except subprocess.TimeoutExpired:
+            print("❌ Installation timed out")
+            return False
+        except Exception as e:
+            print(f"❌ Installation error: {e}")
+            return False
+    
+    async def test_server(self, name: str) -> bool:
+        """Test if a server works by sending a simple request."""
+        if name not in self.servers:
+            print(f"❌ Server '{name}' not found")
+            return False
+        
+        server = self.servers[name]
+        print(f"🧪 Testing {name}...")
+        
+        try:
+            # Start the server process
+            if platform.system() == "Windows":
+                # Windows needs shell=True
+                cmd = server.run_cmd
+                process = await asyncio.create_subprocess_shell(
+                    cmd,
+                    stdin=asyncio.subprocess.PIPE,
+                    stdout=asyncio.subprocess.PIPE, 
+                    stderr=asyncio.subprocess.PIPE
+                )
+            else:
+                # Unix-like systems
+                cmd_parts = server.run_cmd.split()
+                process = await asyncio.create_subprocess_exec(
+                    *cmd_parts,
+                    stdin=asyncio.subprocess.PIPE,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE
+                )
+            
+            # Send initialize request
+            init_request = {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "initialize", 
+                "params": {
+                    "protocolVersion": "2024-11-05",
+                    "capabilities": {},
+                    "clientInfo": {"name": "simple-mcp", "version": "1.0"}
+                }
+            }
+            
+            # Send the request
+            request_json = json.dumps(init_request) + "\n"
+            process.stdin.write(request_json.encode())
+            await process.stdin.drain()
+            
+            # Read response with timeout
+            try:
+                response_line = await asyncio.wait_for(
+                    process.stdout.readline(), 
+                    timeout=5.0
+                )
+                response = json.loads(response_line.decode().strip())
+                
+                if "result" in response:
+                    print(f"✅ {name} is working!")
+                    
+                    # Try to list tools
+                    tools_request = {
+                        "jsonrpc": "2.0",
+                        "id": 2, 
+                        "method": "tools/list",
+                        "params": {}
+                    }
+                    
+                    tools_json = json.dumps(tools_request) + "\n"
+                    process.stdin.write(tools_json.encode())
+                    await process.stdin.drain()
+                    
+                    tools_response_line = await asyncio.wait_for(
+                        process.stdout.readline(),
+                        timeout=5.0
+                    )
+                    tools_response = json.loads(tools_response_line.decode().strip())
+                    
+                    if "result" in tools_response and "tools" in tools_response["result"]:
+                        tools = tools_response["result"]["tools"]
+                        print(f"🔧 Found {len(tools)} tools: {', '.join([t['name'] for t in tools[:3]])}")
+                        if len(tools) > 3:
+                            print(f"   ... and {len(tools) - 3} more")
+                    
+                    return True
+                else:
+                    print(f"❌ Server error: {response.get('error', 'Unknown')}")
+                    return False
+                    
+            except asyncio.TimeoutError:
+                print(f"❌ {name} timed out")
+                return False
+            except json.JSONDecodeError as e:
+                print(f"❌ Invalid JSON response: {e}")
+                return False
+                
+        except FileNotFoundError:
+            print(f"❌ Command not found. Try installing first:")
+            print(f"   {server.install_cmd}")
+            return False
+        except Exception as e:
+            print(f"❌ Test failed: {e}")
+            return False
+        finally:
+            # Clean up process
+            try:
+                process.terminate()
+                await asyncio.wait_for(process.wait(), timeout=2.0)
+            except:
+                try:
+                    process.kill()
+                except:
+                    pass
+    
+    async def call_tool(self, server_name: str, tool_name: str, **params) -> dict:
+        """Call a tool on a server."""
+        if server_name not in self.servers:
+            return {"error": f"Server '{server_name}' not found"}
+        
+        server = self.servers[server_name]
+        print(f"🔧 Calling {tool_name} on {server_name}...")
+        
+        try:
+            # Start server
+            if platform.system() == "Windows":
+                process = await asyncio.create_subprocess_shell(
+                    server.run_cmd,
+                    stdin=asyncio.subprocess.PIPE,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE
+                )
+            else:
+                cmd_parts = server.run_cmd.split()
+                process = await asyncio.create_subprocess_exec(
+                    *cmd_parts,
+                    stdin=asyncio.subprocess.PIPE,
+                    stdout=asyncio.subprocess.PIPE, 
+                    stderr=asyncio.subprocess.PIPE
+                )
+            
+            # Initialize
+            init_request = {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "initialize",
+                "params": {
+                    "protocolVersion": "2024-11-05", 
+                    "capabilities": {},
+                    "clientInfo": {"name": "simple-mcp", "version": "1.0"}
+                }
+            }
+            
+            process.stdin.write((json.dumps(init_request) + "\n").encode())
+            await process.stdin.drain()
+            
+            # Read init response
+            await process.stdout.readline()  # Skip init response
+            
+            # Call tool
+            tool_request = {
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": tool_name,
+                    "arguments": params
+                }
+            }
+            
+            process.stdin.write((json.dumps(tool_request) + "\n").encode())
+            await process.stdin.drain()
+            
+            # Read tool response
+            response_line = await asyncio.wait_for(
+                process.stdout.readline(),
+                timeout=10.0
+            )
+            response = json.loads(response_line.decode().strip())
+            
+            return response
+            
+        except Exception as e:
+            return {"error": str(e)}
+        finally:
+            try:
+                process.terminate()
+                await asyncio.wait_for(process.wait(), timeout=2.0)
+            except:
+                try:
+                    process.kill()
+                except:
+                    pass
