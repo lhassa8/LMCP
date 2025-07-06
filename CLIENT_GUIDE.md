@@ -2,6 +2,15 @@
 
 LMCP is a simple MCP client for discovering and using existing MCP servers.
 
+## Installation
+
+```bash
+# Clone and install from GitHub
+git clone https://github.com/lhassa8/LMCP.git
+cd LMCP
+pip install -e .
+```
+
 ## Quick Start
 
 ```bash

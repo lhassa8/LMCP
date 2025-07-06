@@ -5,6 +5,14 @@
 
 A simple MCP client for discovering and using existing MCP servers.
 
+> 🚀 **New to MCP?** This tool helps you **use** existing MCP servers - no complex setup required!
+
+## 🤔 What is MCP?
+
+**Model Context Protocol (MCP)** lets AI assistants like Claude connect to external tools and data sources. Think of it as "plugins for AI" - MCP servers provide specific capabilities like file operations, web search, database access, etc.
+
+**LMCP is a client** that makes it easy to discover and use these existing MCP servers without complex setup.
+
 ## ✨ Features
 
 - **🔍 Server Discovery** - Find and catalog existing MCP servers
@@ -15,20 +23,24 @@ A simple MCP client for discovering and using existing MCP servers.
 
 ## 🚀 Quick Start
 
-```bash
-# Install LMCP
-pip install lmcp
+> 📚 **Complete Beginner?** Check out [QUICKSTART.md](QUICKSTART.md) for step-by-step instructions!
 
-# List available MCP servers
+```bash
+# 1. Clone and install LMCP
+git clone https://github.com/lhassa8/LMCP.git
+cd LMCP
+pip install -e .
+
+# 2. List available MCP servers
 lmcp list
 
-# Install a server (requires Node.js/npm)
+# 3. Install a server (requires Node.js/npm)
 lmcp install filesystem
 
-# Test if server works  
+# 4. Test if server works  
 lmcp test filesystem
 
-# Use a tool
+# 5. Use a tool
 lmcp use filesystem list_directory --params '{"path": "."}'
 ```
 
@@ -87,13 +99,57 @@ lmcp use wikipedia getPage --params '{"title": "Python (programming language)"}'
 
 ## 📦 Installation
 
+### Prerequisites
+- **Python 3.8+** - [Download here](https://www.python.org/downloads/)
+- **Node.js and npm** - [Download here](https://nodejs.org/) (required for MCP servers)
+- **Git** - [Download here](https://git-scm.com/downloads)
+
+### Install from GitHub
+
 ```bash
-pip install lmcp
+# Clone the repository
+git clone https://github.com/lhassa8/LMCP.git
+cd LMCP
+
+# Install in development mode
+pip install -e .
+
+# Verify installation
+lmcp --help
 ```
 
-### Requirements
-- Python 3.8+
-- Node.js and npm (for installing MCP servers)
+> 💡 **Tip**: For clean installs, use a virtual environment:
+> ```bash
+> python -m venv lmcp-env
+> source lmcp-env/bin/activate  # On Windows: lmcp-env\Scripts\activate
+> pip install -e .
+> ```
+
+### Alternative: Download ZIP
+1. Go to https://github.com/lhassa8/LMCP
+2. Click "Code" → "Download ZIP"
+3. Extract and run: `pip install -e .`
+
+### Troubleshooting Installation
+
+**Issue: `pip: command not found`**
+```bash
+# Install pip first
+python -m ensurepip --upgrade
+```
+
+**Issue: Permission denied**
+```bash
+# Use --user flag
+pip install --user -e .
+```
+
+**Issue: Node.js not found**
+```bash
+# Verify Node.js installation
+node --version
+npm --version
+```
 
 ## 🎯 Focus
 
@@ -108,7 +164,8 @@ LMCP focuses solely on MCP **client** functionality:
 
 ## 📚 Documentation
 
-- **[Client Guide](CLIENT_GUIDE.md)** - Complete usage guide
+- **[QUICKSTART.md](QUICKSTART.md)** - Complete beginner guide (start here!)
+- **[CLIENT_GUIDE.md](CLIENT_GUIDE.md)** - Detailed usage guide
 - **[Model Context Protocol](https://modelcontextprotocol.io/)** - Official MCP specification
 
 ## 🤝 Contributing
