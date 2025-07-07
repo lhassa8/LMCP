@@ -18,7 +18,8 @@ A simple MCP client for discovering and using existing MCP servers.
 - **🔍 Server Discovery** - Find and catalog existing MCP servers
 - **📦 Easy Installation** - Install MCP servers via npm with one command
 - **🧪 Server Testing** - Test if servers work before using them
-- **🔧 Tool Execution** - Call tools on MCP servers with simple commands
+- **🔍 Automatic Tool Discovery** - Inspect servers to discover tools and required parameters
+- **🔧 Smart Tool Execution** - Call tools with automatic parameter validation and hints
 - **✅ Verified Servers** - Curated list of working MCP servers
 
 ## 🚀 Quick Start
@@ -44,7 +45,10 @@ lmcp install filesystem
 # 5. Test if server works  
 lmcp test filesystem
 
-# 6. Use a tool
+# 6. Discover tools and parameters (NEW!)
+lmcp inspect filesystem
+
+# 7. Use a tool
 lmcp use filesystem list_directory --params '{"path": "."}'
 ```
 
@@ -85,6 +89,14 @@ lmcp list
 ```bash
 lmcp install filesystem
 lmcp test filesystem
+```
+
+#### Discover tools and parameters automatically
+```bash
+# See all tools with their parameters and descriptions
+lmcp inspect filesystem
+lmcp inspect wikipedia
+lmcp inspect hello-world
 ```
 
 #### Get examples for any server
@@ -241,4 +253,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**🔍 Discover → 📦 Install → 🧪 Test → 🔧 Use**
+**🔍 Discover → 📦 Install → 🧪 Test → 🔍 Inspect → 🔧 Use**

@@ -317,6 +317,20 @@ class SimpleMCP:
                 except:
                     pass
     
+    async def get_tool_schema(self, server_name: str, tool_name: str) -> dict:
+        """Get the schema for a specific tool."""
+        inspection_result = await self.inspect_server(server_name)
+        
+        if "error" in inspection_result:
+            return inspection_result
+        
+        if "result" in inspection_result and "tools" in inspection_result["result"]:
+            for tool in inspection_result["result"]["tools"]:
+                if tool["name"] == tool_name:
+                    return {"tool": tool}
+        
+        return {"error": f"Tool '{tool_name}' not found in server '{server_name}'"}
+    
     async def call_tool(self, server_name: str, tool_name: str, **params) -> dict:
         """Call a tool on a server."""
         if server_name not in self.servers:
@@ -383,6 +397,82 @@ class SimpleMCP:
             response = json.loads(response_line.decode().strip())
             
             return response
+            
+        except Exception as e:
+            return {"error": str(e)}
+        finally:
+            try:
+                process.terminate()
+                await asyncio.wait_for(process.wait(), timeout=2.0)
+            except:
+                try:
+                    process.kill()
+                except:
+                    pass
+    
+    async def inspect_server(self, server_name: str) -> dict:
+        """Inspect a server to discover its tools and their schemas."""
+        if server_name not in self.servers:
+            return {"error": f"Server '{server_name}' not found"}
+        
+        server = self.servers[server_name]
+        print(f"🔍 Inspecting {server_name}...")
+        
+        try:
+            # Start server
+            if platform.system() == "Windows":
+                process = await asyncio.create_subprocess_shell(
+                    server.run_cmd,
+                    stdin=asyncio.subprocess.PIPE,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE
+                )
+            else:
+                cmd_parts = server.run_cmd.split()
+                process = await asyncio.create_subprocess_exec(
+                    *cmd_parts,
+                    stdin=asyncio.subprocess.PIPE,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE
+                )
+            
+            # Initialize
+            init_request = {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "initialize",
+                "params": {
+                    "protocolVersion": "2024-11-05",
+                    "capabilities": {},
+                    "clientInfo": {"name": "simple-mcp", "version": "1.0"}
+                }
+            }
+            
+            process.stdin.write((json.dumps(init_request) + "\n").encode())
+            await process.stdin.drain()
+            
+            # Read init response
+            await process.stdout.readline()
+            
+            # List tools
+            tools_request = {
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/list",
+                "params": {}
+            }
+            
+            process.stdin.write((json.dumps(tools_request) + "\n").encode())
+            await process.stdin.drain()
+            
+            # Read tools response
+            tools_response_line = await asyncio.wait_for(
+                process.stdout.readline(),
+                timeout=10.0
+            )
+            tools_response = json.loads(tools_response_line.decode().strip())
+            
+            return tools_response
             
         except Exception as e:
             return {"error": str(e)}

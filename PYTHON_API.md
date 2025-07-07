@@ -18,6 +18,10 @@ client.list_servers()
 client.install_server("hello-world")
 await client.test_server("hello-world")
 
+# Discover tools and parameters
+schema = await client.inspect_server("hello-world")
+print("Available tools:", schema)
+
 # Use a tool
 result = await client.call_tool("hello-world", "echo", message="Hello from Python!")
 print(result)
@@ -86,10 +90,39 @@ async def test_server():
 result = asyncio.run(test_server())
 ```
 
-### 5. Use Tools
+### 5. Discover Tools and Parameters
+
+```python
+async def discover_tools():
+    # Inspect a server to see all available tools
+    result = await client.inspect_server("filesystem")
+    
+    if "result" in result and "tools" in result["result"]:
+        for tool in result["result"]["tools"]:
+            print(f"Tool: {tool['name']}")
+            print(f"Description: {tool.get('description', 'No description')}")
+            
+            # Show required parameters
+            if 'inputSchema' in tool and 'properties' in tool['inputSchema']:
+                required = tool['inputSchema'].get('required', [])
+                print(f"Required parameters: {required}")
+                
+                for param, info in tool['inputSchema']['properties'].items():
+                    print(f"  - {param} ({info.get('type', 'unknown')}): {info.get('description', 'No description')}")
+            print()
+
+# Run discovery
+asyncio.run(discover_tools())
+```
+
+### 6. Use Tools
 
 ```python
 async def use_filesystem():
+    # First discover what parameters are needed
+    schema = await client.get_tool_schema("filesystem", "list_directory")
+    print("Tool schema:", schema)
+    
     # List directory
     result = await client.call_tool(
         "filesystem", 

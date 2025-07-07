@@ -45,6 +45,7 @@ def cli(ctx: click.Context, verbose: bool) -> None:
         console.print("  [cyan]lmcp list[/cyan]                    # List available MCP servers")
         console.print("  [cyan]lmcp install filesystem[/cyan]     # Install a server")
         console.print("  [cyan]lmcp test filesystem[/cyan]        # Test if a server works")
+        console.print("  [cyan]lmcp inspect filesystem[/cyan]     # Discover tools and parameters")
         console.print("  [cyan]lmcp examples filesystem[/cyan]    # Show usage examples")
         console.print("\n[bold]🔧 Using Servers:[/bold]")
         console.print("  [cyan]lmcp use filesystem list_directory --params '{\"path\": \".\"}'[/cyan]")
@@ -90,6 +91,74 @@ def test(name: str) -> None:
             console.print(f"💡 Try installing first: [cyan]lmcp install {name}[/cyan]")
     
     asyncio.run(do_test())
+
+
+@cli.command()
+@click.argument("name")
+def inspect(name: str) -> None:
+    """Inspect a server to discover its tools and parameters."""
+    client = SimpleMCP()
+    
+    async def do_inspect():
+        result = await client.inspect_server(name)
+        
+        if "error" in result:
+            console.print(f"❌ Error: {result['error']}")
+            return
+        
+        if "result" in result and "tools" in result["result"]:
+            tools = result["result"]["tools"]
+            
+            console.print(f"[bold green]🔍 {name} Server Tools[/bold green]\n")
+            
+            for tool in tools:
+                console.print(f"[bold cyan]🔧 {tool['name']}[/bold cyan]")
+                console.print(f"   📝 {tool.get('description', 'No description')}")
+                
+                # Show input schema
+                if 'inputSchema' in tool:
+                    schema = tool['inputSchema']
+                    if 'properties' in schema:
+                        console.print("   📥 [bold]Parameters:[/bold]")
+                        
+                        required = schema.get('required', [])
+                        for param_name, param_info in schema['properties'].items():
+                            param_type = param_info.get('type', 'unknown')
+                            param_desc = param_info.get('description', 'No description')
+                            required_mark = " [red](required)[/red]" if param_name in required else " [dim](optional)[/dim]"
+                            
+                            console.print(f"      • [yellow]{param_name}[/yellow] ({param_type}){required_mark}")
+                            console.print(f"        {param_desc}")
+                        
+                        # Generate example command
+                        example_params = {}
+                        for param_name, param_info in schema['properties'].items():
+                            param_type = param_info.get('type', 'string')
+                            if param_type == 'string':
+                                example_params[param_name] = f"example_{param_name}"
+                            elif param_type == 'number' or param_type == 'integer':
+                                example_params[param_name] = 42
+                            elif param_type == 'boolean':
+                                example_params[param_name] = True
+                            else:
+                                example_params[param_name] = f"example_{param_name}"
+                        
+                        params_json = json.dumps(example_params)
+                        console.print(f"   💡 [bold]Example:[/bold]")
+                        console.print(f"      [cyan]lmcp use {name} {tool['name']} --params '{params_json}'[/cyan]")
+                    else:
+                        console.print("   📥 [bold]Parameters:[/bold] None required")
+                        console.print(f"   💡 [bold]Example:[/bold]")
+                        console.print(f"      [cyan]lmcp use {name} {tool['name']}[/cyan]")
+                else:
+                    console.print("   📥 [bold]Parameters:[/bold] Schema not available")
+                
+                console.print()  # Empty line between tools
+                
+        else:
+            console.print("❌ No tools found or invalid response")
+    
+    asyncio.run(do_inspect())
 
 
 @cli.command()
@@ -214,18 +283,30 @@ def use(server_name: str, tool_name: str, params: Optional[str]) -> None:
             console.print("💡 Parameters must be valid JSON, like: --params '{\"query\": \"python\"}'")
             return
     else:
-        # Check if this server/tool typically needs parameters
-        needs_params_tools = {
-            "wikipedia": ["findPage", "getPage", "onThisDay"],
-            "filesystem": ["read_file", "write_file", "list_directory", "create_directory"],
-            "hello-world": ["echo", "add"],
-            "sequential-thinking": ["sequentialthinking"]
-        }
-        
-        if server_name in needs_params_tools and tool_name in needs_params_tools[server_name]:
-            console.print(f"💡 The {tool_name} tool usually needs parameters. Try:")
+        # Try to get tool schema to provide better guidance
+        async def check_params():
+            schema_result = await client.get_tool_schema(server_name, tool_name)
+            if "tool" in schema_result:
+                tool = schema_result["tool"]
+                if "inputSchema" in tool and "properties" in tool["inputSchema"]:
+                    required = tool["inputSchema"].get("required", [])
+                    if required:
+                        console.print(f"💡 The [bold]{tool_name}[/bold] tool requires parameters:")
+                        for param in required:
+                            param_info = tool["inputSchema"]["properties"].get(param, {})
+                            param_type = param_info.get("type", "unknown")
+                            param_desc = param_info.get("description", "No description")
+                            console.print(f"   • [yellow]{param}[/yellow] ({param_type}): {param_desc}")
+                        
+                        console.print(f"\n   [cyan]lmcp inspect {server_name}[/cyan] - to see full tool details")
+                        return
+            
+            # Fallback to generic message
+            console.print(f"💡 The {tool_name} tool may need parameters. Try:")
+            console.print(f"   [cyan]lmcp inspect {server_name}[/cyan] - to discover required parameters")
             console.print(f"   [cyan]lmcp examples {server_name}[/cyan] - to see examples")
-            console.print(f"   [cyan]lmcp use {server_name} {tool_name} --params '{{\"key\": \"value\"}}'[/cyan]")
+        
+        asyncio.run(check_params())
     
     async def do_call():
         console.print(f"🔧 Using {tool_name} on {server_name}...")
