@@ -3,24 +3,53 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A simple MCP client for discovering and using existing MCP servers.
+A simple MCP client for discovering and using existing MCP servers with **automatic tool discovery**.
 
-> 🚀 **New to MCP?** This tool helps you **use** existing MCP servers - no complex setup required!
+> 🚀 **New to MCP?** This tool helps you **discover and use** existing MCP servers without guessing parameters!
 
 ## 🤔 What is MCP?
 
 **Model Context Protocol (MCP)** lets AI assistants like Claude connect to external tools and data sources. Think of it as "plugins for AI" - MCP servers provide specific capabilities like file operations, web search, database access, etc.
 
-**LMCP is a client** that makes it easy to discover and use these existing MCP servers without complex setup.
+**LMCP is a smart client** that automatically discovers tools and parameters, making any MCP server easy to use without guessing or reading documentation.
 
-## ✨ Features
+## 🚨 Solves the MCP Usability Problem
 
-- **🔍 Server Discovery** - Find and catalog existing MCP servers
+**The Problem:** Every MCP server works differently. Users have to guess parameter names, read documentation, or use trial-and-error to figure out how to use tools.
+
+**The Solution:** LMCP automatically inspects servers and discovers:
+- ✅ **All available tools** with descriptions
+- ✅ **Required vs optional parameters** with types  
+- ✅ **Auto-generated examples** for every tool
+- ✅ **Real-time parameter hints** when something's missing
+
+**Result:** No more guessing - use any MCP server immediately!
+
+| Traditional MCP Usage | LMCP Smart Usage |
+|---|---|
+| ❌ Read docs to find tools | ✅ `lmcp inspect server` shows all tools |
+| ❌ Guess parameter names | ✅ See exact required parameters |
+| ❌ Trial and error with types | ✅ Auto-generated examples |
+| ❌ Different servers, different rules | ✅ Works with ANY MCP server |
+
+```bash
+# Traditional way: ❌ Guess and hope
+lmcp use server tool --params '{"mystery": "???"}'  # What parameters?!
+
+# LMCP way: ✅ Discover and use
+lmcp inspect server           # See all tools and exact parameters
+lmcp use server tool --params '{"required_param": "value"}'  # Use with confidence!
+```
+
+## ✨ Key Features
+
+- **🎯 Zero-Guessing Usage** - Automatically discover tools and required parameters from any MCP server
+- **🔍 Smart Tool Inspection** - See all available tools with descriptions, parameters, and auto-generated examples  
+- **🛡️ Parameter Validation** - Get helpful hints when parameters are missing or incorrect
 - **📦 Easy Installation** - Install MCP servers via npm with one command
 - **🧪 Server Testing** - Test if servers work before using them
-- **🔍 Automatic Tool Discovery** - Inspect servers to discover tools and required parameters
-- **🔧 Smart Tool Execution** - Call tools with automatic parameter validation and hints
-- **✅ Verified Servers** - Curated list of working MCP servers
+- **🐍 Full Python API** - Complete programmatic access with discovery features
+- **✅ 18+ Server Catalog** - Curated list of working MCP servers
 
 ## 🚀 Quick Start
 
@@ -45,10 +74,11 @@ lmcp install filesystem
 # 5. Test if server works  
 lmcp test filesystem
 
-# 6. Discover tools and parameters (NEW!)
+# 6. 🔍 DISCOVER tools and parameters (No more guessing!)
 lmcp inspect filesystem
+# Shows: list_directory needs "path" (string), read_file needs "path" (string), etc.
 
-# 7. Use a tool
+# 7. ✅ Use tools with confidence  
 lmcp use filesystem list_directory --params '{"path": "."}'
 ```
 
@@ -91,17 +121,24 @@ lmcp install filesystem
 lmcp test filesystem
 ```
 
-#### Discover tools and parameters automatically
+#### 🔍 Discover tools and parameters automatically (KEY FEATURE!)
 ```bash
-# See all tools with their parameters and descriptions
-lmcp inspect filesystem
-lmcp inspect wikipedia
-lmcp inspect hello-world
+# See ALL tools with parameters, types, and auto-generated examples
+lmcp inspect filesystem    # Shows 12 file operation tools
+lmcp inspect wikipedia     # Shows 4 Wikipedia tools with exact parameter formats  
+lmcp inspect hello-world   # Shows 3 testing tools
+
+# Example output:
+# 🔧 read_file
+#    📝 Read the complete contents of a file
+#    📥 Parameters:
+#       • path (string) (required) - File path to read
+#    💡 Example: lmcp use filesystem read_file --params '{"path": "example.txt"}'
 ```
 
-#### Get examples for any server
+#### Get examples for any server (static examples)
 ```bash
-# See examples for any server
+# See curated examples for any server  
 lmcp examples filesystem
 lmcp examples hello-world 
 lmcp examples wikipedia
@@ -122,7 +159,7 @@ lmcp use wikipedia findPage --params '{"query": "artificial intelligence"}'
 
 ### Python API
 
-Use LMCP programmatically in your Python applications:
+Use LMCP programmatically with automatic tool discovery:
 
 ```python
 import asyncio
@@ -133,18 +170,19 @@ async def main():
     client = SimpleMCP()
     
     # Install and test a server
-    client.install_server("hello-world")
-    await client.test_server("hello-world")
-    
-    # Use tools
-    result = await client.call_tool("hello-world", "echo", message="Hello from Python!")
-    print(result)
-    
-    # File operations
     client.install_server("filesystem")
     await client.test_server("filesystem")
     
-    # List directory
+    # 🔍 DISCOVER tools and parameters automatically
+    schema = await client.inspect_server("filesystem")
+    print("Available tools:", [tool['name'] for tool in schema['result']['tools']])
+    
+    # 🔍 Get specific tool requirements
+    tool_schema = await client.get_tool_schema("filesystem", "read_file")
+    required_params = tool_schema['tool']['inputSchema']['required']
+    print(f"read_file requires: {required_params}")
+    
+    # ✅ Use tools with confidence (no guessing!)
     result = await client.call_tool("filesystem", "list_directory", path=".")
     print("Directory contents:", result)
 
@@ -224,16 +262,17 @@ node --version
 npm --version
 ```
 
-## 🎯 Focus
+## 🎯 Core Capabilities
 
-LMCP focuses solely on MCP **client** functionality:
+LMCP is a **smart MCP client** that solves the parameter guessing problem:
 
-✅ **Discovering** existing MCP servers  
-✅ **Installing** MCP servers via npm  
-✅ **Testing** server connectivity  
-✅ **Using** MCP servers as a client  
+✅ **Auto-Discovery** - Inspect any MCP server to discover tools and parameters  
+✅ **Zero-Guessing** - Never guess parameter names or types again  
+✅ **Smart Validation** - Get helpful hints when parameters are missing  
+✅ **Server Management** - Install, test, and use MCP servers easily  
+✅ **Both CLI & Python** - Command-line and programmatic access  
 
-❌ No server creation - just client functionality!
+❌ No server creation - just intelligent client functionality!
 
 ## 📚 Documentation
 
@@ -253,4 +292,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**🔍 Discover → 📦 Install → 🧪 Test → 🔍 Inspect → 🔧 Use**
+**🔍 Discover Servers → 📦 Install → 🧪 Test → 🔍 Inspect Tools → ✅ Use Without Guessing**
