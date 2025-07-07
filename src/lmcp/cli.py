@@ -48,6 +48,7 @@ def cli(ctx: click.Context, verbose: bool) -> None:
         console.print("  [cyan]lmcp examples filesystem[/cyan]    # Show usage examples")
         console.print("\n[bold]🔧 Using Servers:[/bold]")
         console.print("  [cyan]lmcp use filesystem list_directory --params '{\"path\": \".\"}'[/cyan]")
+        console.print("  [cyan]lmcp use wikipedia findPage --params '{\"query\": \"python\"}'[/cyan]")
         console.print("\n[bold]📚 Help:[/bold]")
         console.print("  [cyan]lmcp --help[/cyan]       # Full help")
         console.print("  [cyan]lmcp version[/cyan]      # Version info")
@@ -112,17 +113,16 @@ def examples(name: str) -> None:
             ("Create directory", 'lmcp use filesystem create_directory --params \'{"path": "new_folder"}\''),
         ],
         "hello-world": [
-            ("Echo message", 'lmcp use hello-world echo --params \'{"message": "Hello LMCP!"}\''),
-            ("Add numbers", 'lmcp use hello-world add --params \'{"a": 5, "b": 3}\''),
+            ("Echo message", 'lmcp use hello-world echo --params \'{"message": "Hello LMCP"}\''),
             ("Debug info", 'lmcp use hello-world debug --params \'{}\''),
         ],
         "wikipedia": [
             ("Search articles", 'lmcp use wikipedia findPage --params \'{"query": "artificial intelligence"}\''),
             ("Get page content", 'lmcp use wikipedia getPage --params \'{"title": "Python (programming language)"}\''),
-            ("Today in history", 'lmcp use wikipedia onThisDay --params \'{"month": 7, "day": 6}\''),
+            ("Today in history", 'lmcp use wikipedia onThisDay --params \'{"date": "2025-07-06"}\''),
         ],
         "sequential-thinking": [
-            ("Think step by step", 'lmcp use sequential-thinking sequentialthinking --params \'{"thought": "How to solve this problem"}\''),
+            ("Think step by step", 'lmcp use sequential-thinking sequentialthinking --params \'{"thought": "How to solve this problem", "thoughtNumber": 1, "totalThoughts": 3, "nextThoughtNeeded": true}\''),
         ],
         "calculator": [
             ("Basic calculation", 'lmcp use calculator calculate --params \'{"expression": "2 + 2 * 3"}\''),
@@ -196,7 +196,12 @@ def examples(name: str) -> None:
 @click.argument("tool_name")
 @click.option("--params", "-p", help="Tool parameters as JSON")
 def use(server_name: str, tool_name: str, params: Optional[str]) -> None:
-    """Use a tool on a server."""
+    """Use a tool on a server.
+    
+    Examples:
+    lmcp use wikipedia findPage --params '{"query": "python"}'
+    lmcp use filesystem read_file --params '{"path": "README.md"}'
+    """
     client = SimpleMCP()
     
     # Parse parameters
@@ -206,7 +211,21 @@ def use(server_name: str, tool_name: str, params: Optional[str]) -> None:
             tool_params = json.loads(params)
         except json.JSONDecodeError:
             console.print("❌ Invalid JSON parameters")
+            console.print("💡 Parameters must be valid JSON, like: --params '{\"query\": \"python\"}'")
             return
+    else:
+        # Check if this server/tool typically needs parameters
+        needs_params_tools = {
+            "wikipedia": ["findPage", "getPage", "onThisDay"],
+            "filesystem": ["read_file", "write_file", "list_directory", "create_directory"],
+            "hello-world": ["echo", "add"],
+            "sequential-thinking": ["sequentialthinking"]
+        }
+        
+        if server_name in needs_params_tools and tool_name in needs_params_tools[server_name]:
+            console.print(f"💡 The {tool_name} tool usually needs parameters. Try:")
+            console.print(f"   [cyan]lmcp examples {server_name}[/cyan] - to see examples")
+            console.print(f"   [cyan]lmcp use {server_name} {tool_name} --params '{{\"key\": \"value\"}}'[/cyan]")
     
     async def do_call():
         console.print(f"🔧 Using {tool_name} on {server_name}...")

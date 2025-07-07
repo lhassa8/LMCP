@@ -51,8 +51,8 @@ lmcp use filesystem list_directory --params '{"path": "."}'
 ## 🌐 Available Servers (18 Total)
 
 ### Verified Working ✅
-- **filesystem** - File operations (read, write, list files)
-- **hello-world** - Simple Hello World MCP server for testing (3 tools)
+- **filesystem** - File operations (read, write, list files) (12 tools)
+- **hello-world** - Simple Hello World MCP server for testing (2 working tools)
 - **sequential-thinking** - Sequential thinking and problem solving tools (1 tool)
 - **wikipedia** - Wikipedia API interactions and search (4 tools)
 
@@ -102,7 +102,7 @@ lmcp use filesystem list_directory --params '{"path": "."}'
 lmcp use filesystem read_file --params '{"path": "README.md"}'
 
 # Hello World testing
-lmcp use hello-world echo --params '{"message": "Hello LMCP!"}'
+lmcp use hello-world echo --params '{"message": "Hello LMCP"}'
 
 # Wikipedia search
 lmcp use wikipedia findPage --params '{"query": "artificial intelligence"}'

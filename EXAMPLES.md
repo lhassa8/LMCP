@@ -26,10 +26,7 @@ lmcp use filesystem create_directory --params '{"path": "new_folder"}'
 ### 👋 hello-world - Testing & Demo
 ```bash
 # Echo a message
-lmcp use hello-world echo --params '{"message": "Hello LMCP!"}'
-
-# Add two numbers
-lmcp use hello-world add --params '{"a": 5, "b": 3}'
+lmcp use hello-world echo --params '{"message": "Hello LMCP"}'
 
 # Get debug information
 lmcp use hello-world debug --params '{}'
@@ -43,14 +40,14 @@ lmcp use wikipedia findPage --params '{"query": "artificial intelligence"}'
 # Get page content
 lmcp use wikipedia getPage --params '{"title": "Python (programming language)"}'
 
-# Today in history
-lmcp use wikipedia onThisDay --params '{"month": 7, "day": 6}'
+# Today in history  
+lmcp use wikipedia onThisDay --params '{"date": "2025-07-06"}'
 ```
 
 ### 🤔 sequential-thinking - Problem Solving
 ```bash
 # Think through a problem step by step
-lmcp use sequential-thinking sequentialthinking --params '{"thought": "How to solve this problem"}'
+lmcp use sequential-thinking sequentialthinking --params '{"thought": "How to solve this problem", "thoughtNumber": 1, "totalThoughts": 3, "nextThoughtNeeded": true}'
 ```
 
 ## ⚠️ Community Servers
