@@ -180,13 +180,24 @@ class SimpleMCP:
         print(f"Command: {server.install_cmd}")
         
         try:
-            # Run npm install
-            result = subprocess.run(
-                server.install_cmd.split(),
-                capture_output=True,
-                text=True,
-                timeout=60
-            )
+            # Run npm install with proper cross-platform handling
+            if platform.system() == "Windows":
+                # Windows needs shell=True for npm commands
+                result = subprocess.run(
+                    server.install_cmd,
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+            else:
+                # Unix-like systems can use split()
+                result = subprocess.run(
+                    server.install_cmd.split(),
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
             
             if result.returncode == 0:
                 print(f"✅ {name} installed successfully!")

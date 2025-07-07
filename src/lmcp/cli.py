@@ -188,7 +188,7 @@ def examples(name: str) -> None:
         "wikipedia": [
             ("Search articles", 'lmcp use wikipedia findPage --params \'{"query": "artificial intelligence"}\''),
             ("Get page content", 'lmcp use wikipedia getPage --params \'{"title": "Python (programming language)"}\''),
-            ("Today in history", 'lmcp use wikipedia onThisDay --params \'{"date": "2025-07-06"}\''),
+            ("Get page images", 'lmcp use wikipedia getImagesForPage --params \'{"title": "Python (programming language)", "limit": 3}\''),
         ],
         "sequential-thinking": [
             ("Think step by step", 'lmcp use sequential-thinking sequentialthinking --params \'{"thought": "How to solve this problem", "thoughtNumber": 1, "totalThoughts": 3, "nextThoughtNeeded": true}\''),
