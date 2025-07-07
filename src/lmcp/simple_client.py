@@ -309,13 +309,26 @@ class SimpleMCP:
         finally:
             # Clean up process
             try:
-                process.terminate()
-                await asyncio.wait_for(process.wait(), timeout=2.0)
-            except:
-                try:
-                    process.kill()
-                except:
-                    pass
+                if 'process' in locals() and process and process.returncode is None:
+                    # Close stdin first to signal the process to exit gracefully
+                    if process.stdin and not process.stdin.is_closing():
+                        process.stdin.close()
+                    
+                    # Wait a moment for graceful shutdown
+                    try:
+                        await asyncio.wait_for(process.wait(), timeout=1.0)
+                    except asyncio.TimeoutError:
+                        # Force terminate if graceful shutdown failed
+                        process.terminate()
+                        try:
+                            await asyncio.wait_for(process.wait(), timeout=1.0)
+                        except asyncio.TimeoutError:
+                            # Force kill if terminate failed
+                            process.kill()
+                            await process.wait()
+            except Exception:
+                # Ignore cleanup errors to prevent masking the original error
+                pass
     
     async def get_tool_schema(self, server_name: str, tool_name: str) -> dict:
         """Get the schema for a specific tool."""
@@ -402,13 +415,26 @@ class SimpleMCP:
             return {"error": str(e)}
         finally:
             try:
-                process.terminate()
-                await asyncio.wait_for(process.wait(), timeout=2.0)
-            except:
-                try:
-                    process.kill()
-                except:
-                    pass
+                if 'process' in locals() and process and process.returncode is None:
+                    # Close stdin first to signal the process to exit gracefully
+                    if process.stdin and not process.stdin.is_closing():
+                        process.stdin.close()
+                    
+                    # Wait a moment for graceful shutdown
+                    try:
+                        await asyncio.wait_for(process.wait(), timeout=1.0)
+                    except asyncio.TimeoutError:
+                        # Force terminate if graceful shutdown failed
+                        process.terminate()
+                        try:
+                            await asyncio.wait_for(process.wait(), timeout=1.0)
+                        except asyncio.TimeoutError:
+                            # Force kill if terminate failed
+                            process.kill()
+                            await process.wait()
+            except Exception:
+                # Ignore cleanup errors to prevent masking the original error
+                pass
     
     async def inspect_server(self, server_name: str) -> dict:
         """Inspect a server to discover its tools and their schemas."""
@@ -478,10 +504,23 @@ class SimpleMCP:
             return {"error": str(e)}
         finally:
             try:
-                process.terminate()
-                await asyncio.wait_for(process.wait(), timeout=2.0)
-            except:
-                try:
-                    process.kill()
-                except:
-                    pass
+                if 'process' in locals() and process and process.returncode is None:
+                    # Close stdin first to signal the process to exit gracefully
+                    if process.stdin and not process.stdin.is_closing():
+                        process.stdin.close()
+                    
+                    # Wait a moment for graceful shutdown
+                    try:
+                        await asyncio.wait_for(process.wait(), timeout=1.0)
+                    except asyncio.TimeoutError:
+                        # Force terminate if graceful shutdown failed
+                        process.terminate()
+                        try:
+                            await asyncio.wait_for(process.wait(), timeout=1.0)
+                        except asyncio.TimeoutError:
+                            # Force kill if terminate failed
+                            process.kill()
+                            await process.wait()
+            except Exception:
+                # Ignore cleanup errors to prevent masking the original error
+                pass

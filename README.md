@@ -68,27 +68,31 @@ pip install -e .
 # 3. List available MCP servers
 lmcp list
 
-# 4. Install a server (requires Node.js/npm)
-lmcp install filesystem
+# 4. Install a server (requires Node.js/npm) - Using Wikipedia as example
+lmcp install wikipedia
 
 # 5. Test if server works  
-lmcp test filesystem
+lmcp test wikipedia
 
 # 6. 🔍 DISCOVER tools and parameters (No more guessing!)
-lmcp inspect filesystem
-# Shows: list_directory needs "path" (string), read_file needs "path" (string), etc.
+lmcp inspect wikipedia
+# Shows: findPage needs "query" (string), getPage needs "title" (string), etc.
 
 # 7. ✅ Use tools with confidence  
-lmcp use filesystem list_directory --params '{"path": "."}'
+lmcp use wikipedia findPage --params '{"query": "artificial intelligence"}'
 ```
 
 ## 🌐 Available Servers (18 Total)
 
+> **Icon Legend:**
+> - ✅ **Verified Working** - Tested and confirmed to work reliably
+> - ⚠️ **Community Servers** - May require setup, credentials, or have compatibility issues
+
 ### Verified Working ✅
-- **filesystem** - File operations (read, write, list files) (12 tools)
-- **hello-world** - Simple Hello World MCP server for testing (2 working tools)
-- **sequential-thinking** - Sequential thinking and problem solving tools (1 tool)
-- **wikipedia** - Wikipedia API interactions and search (4 tools)
+- **filesystem** - File operations (read, write, list files) - **ALL 12 tools work perfectly**
+- **sequential-thinking** - Sequential thinking and problem solving tools - **1 tool works perfectly**
+- **wikipedia** - Wikipedia API interactions and search - **3/4 tools work** (onThisDay broken)
+- **hello-world** - Simple Hello World MCP server for testing - **2/3 tools work** (add broken)
 
 ### Community Servers ⚠️  
 - **desktop-commander** - Terminal operations and file editing
@@ -117,44 +121,45 @@ lmcp list
 
 #### Install and test a server
 ```bash
-lmcp install filesystem
-lmcp test filesystem
+lmcp install wikipedia
+lmcp test wikipedia
 ```
 
 #### 🔍 Discover tools and parameters automatically (KEY FEATURE!)
 ```bash
 # See ALL tools with parameters, types, and auto-generated examples
-lmcp inspect filesystem    # Shows 12 file operation tools
-lmcp inspect wikipedia     # Shows 4 Wikipedia tools with exact parameter formats  
+lmcp inspect wikipedia     # Shows 4 Wikipedia tools with exact parameter formats
+lmcp inspect filesystem    # Shows 12 file operation tools  
 lmcp inspect hello-world   # Shows 3 testing tools
 
 # Example output:
-# 🔧 read_file
-#    📝 Read the complete contents of a file
+# 🔧 findPage
+#    📝 Search for Wikipedia pages matching a query
 #    📥 Parameters:
-#       • path (string) (required) - File path to read
-#    💡 Example: lmcp use filesystem read_file --params '{"path": "example.txt"}'
+#       • query (string) (required) - Search query
+#    💡 Example: lmcp use wikipedia findPage --params '{"query": "example_query"}'
 ```
 
 #### Get examples for any server (static examples)
 ```bash
 # See curated examples for any server  
-lmcp examples filesystem
-lmcp examples hello-world 
 lmcp examples wikipedia
+lmcp examples filesystem
+lmcp examples hello-world
 ```
 
 #### Use server tools
 ```bash
+# Wikipedia search and information
+lmcp use wikipedia findPage --params '{"query": "artificial intelligence"}'
+lmcp use wikipedia getPage --params '{"title": "Python (programming language)"}'
+
 # Filesystem operations
 lmcp use filesystem list_directory --params '{"path": "."}'
 lmcp use filesystem read_file --params '{"path": "README.md"}'
 
 # Hello World testing
 lmcp use hello-world echo --params '{"message": "Hello LMCP"}'
-
-# Wikipedia search
-lmcp use wikipedia findPage --params '{"query": "artificial intelligence"}'
 ```
 
 ### Python API
@@ -170,21 +175,21 @@ async def main():
     client = SimpleMCP()
     
     # Install and test a server
-    client.install_server("filesystem")
-    await client.test_server("filesystem")
+    client.install_server("wikipedia")
+    await client.test_server("wikipedia")
     
     # 🔍 DISCOVER tools and parameters automatically
-    schema = await client.inspect_server("filesystem")
+    schema = await client.inspect_server("wikipedia")
     print("Available tools:", [tool['name'] for tool in schema['result']['tools']])
     
     # 🔍 Get specific tool requirements
-    tool_schema = await client.get_tool_schema("filesystem", "read_file")
+    tool_schema = await client.get_tool_schema("wikipedia", "findPage")
     required_params = tool_schema['tool']['inputSchema']['required']
-    print(f"read_file requires: {required_params}")
+    print(f"findPage requires: {required_params}")
     
     # ✅ Use tools with confidence (no guessing!)
-    result = await client.call_tool("filesystem", "list_directory", path=".")
-    print("Directory contents:", result)
+    result = await client.call_tool("wikipedia", "findPage", query="artificial intelligence")
+    print("Search results:", result)
 
 # Run the example
 asyncio.run(main())
